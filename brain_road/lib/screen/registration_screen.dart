@@ -32,9 +32,9 @@ class _RegistrationScreenState extends State<RegistrationScreen>
 
   // Age ranges
   final List<Map<String, String>> ageRanges = [
-    {'label': '5-7 years', 'value': '5-7'},
-    {'label': '8-10 years', 'value': '8-10'},
-    {'label': '11-13 years', 'value': '11-13'},
+    {'label': '5-7 років', 'value': '5-7'},
+    {'label': '8-10 років', 'value': '8-10'},
+    {'label': '11-13 років', 'value': '11-13'},
   ];
 
   @override
@@ -95,15 +95,15 @@ class _RegistrationScreenState extends State<RegistrationScreen>
 
   void _startAnimations() {
     Future.delayed(const Duration(milliseconds: 300), () {
-      _fadeController.forward();
+      if (mounted) _fadeController.forward();
     });
     
     Future.delayed(const Duration(milliseconds: 600), () {
-      _slideController.forward();
+      if (mounted) _slideController.forward();
     });
     
     Future.delayed(const Duration(milliseconds: 900), () {
-      _bounceController.forward();
+      if (mounted) _bounceController.forward();
     });
   }
 
@@ -132,13 +132,21 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   }
 
   void _showSuccessDialog() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         child: Container(
-          padding: const EdgeInsets.all(AppSizes.paddingXLarge),
+          constraints: BoxConstraints(
+            maxWidth: screenWidth * 0.9,
+            maxHeight: MediaQuery.of(context).size.height * 0.8,
+          ),
+          padding: EdgeInsets.all(
+            screenWidth > 375 ? AppSizes.paddingXLarge : AppSizes.paddingLarge,
+          ),
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
@@ -150,134 +158,161 @@ class _RegistrationScreenState extends State<RegistrationScreen>
               ),
             ],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Avatar with glow effect
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: AppColors.yellow.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.yellow.withOpacity(0.3),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    _selectedAvatar!,
-                    style: const TextStyle(fontSize: 36),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Avatar with glow effect
+                Container(
+                  width: screenWidth * 0.2,
+                  height: screenWidth * 0.2,
+                  constraints: const BoxConstraints(
+                    minWidth: 70,
+                    maxWidth: 90,
+                    minHeight: 70,
+                    maxHeight: 90,
                   ),
-                ),
-              ),
-              
-              const SizedBox(height: AppSizes.paddingLarge),
-              
-              Text(
-                'Welcome Aboard! 🎉',
-                style: AppTextStyles.sectionTitle.copyWith(fontSize: 24),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: AppSizes.paddingSmall),
-              
-              Text(
-                'Hi ${_nameController.text.trim()}!',
-                style: AppTextStyles.bodyText.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.green,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: AppSizes.paddingLarge),
-              
-              Container(
-                padding: const EdgeInsets.all(AppSizes.paddingLarge),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFFF8F9FA),
-                      Color(0xFFE9ECEF),
+                  decoration: BoxDecoration(
+                    color: AppColors.yellow.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.yellow.withOpacity(0.3),
+                        blurRadius: 20,
+                        spreadRadius: 5,
+                      ),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                  child: Center(
+                    child: Text(
+                      _selectedAvatar!,
+                      style: TextStyle(fontSize: screenWidth * 0.08),
+                    ),
+                  ),
                 ),
-                child: Column(
+                
+                SizedBox(height: AppSizes.paddingLarge),
+                
+                Text(
+                  'Welcome! 🎉',
+                  style: AppTextStyles.sectionTitle.copyWith(
+                    fontSize: screenWidth * 0.06,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                
+                SizedBox(height: AppSizes.paddingSmall),
+                
+                Text(
+                  'Hello ${_nameController.text.trim()}!',
+                  style: AppTextStyles.bodyText.copyWith(
+                    fontSize: screenWidth * 0.045,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.green,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                
+                SizedBox(height: AppSizes.paddingLarge),
+                
+                Container(
+                  padding: EdgeInsets.all(AppSizes.paddingLarge),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFFF8F9FA),
+                        Color(0xFFE9ECEF),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        '🚀', 
+                        style: TextStyle(fontSize: screenWidth * 0.1),
+                      ),
+                      SizedBox(height: AppSizes.paddingSmall),
+                      Text(
+                        'Ready to embark on your amazing journey into the world of logic and knowledge?',
+                        style: AppTextStyles.bodyText.copyWith(
+                          fontSize: screenWidth * 0.04,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                
+                SizedBox(height: AppSizes.paddingMedium),
+                
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSizes.paddingMedium,
+                    vertical: AppSizes.paddingSmall,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.green.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+                  ),
+                  child: Text(
+                    'Age group: ${_getAgeRangeLabel()}',
+                    style: AppTextStyles.captionBold.copyWith(
+                      color: AppColors.green,
+                      fontSize: screenWidth * 0.035,
+                    ),
+                  ),
+                ),
+                
+                SizedBox(height: AppSizes.paddingXLarge),
+                
+                // iOS style buttons
+                Row(
                   children: [
-                    const Text('🚀', style: TextStyle(fontSize: 40)),
-                    const SizedBox(height: AppSizes.paddingSmall),
-                    Text(
-                      'Ready to start your amazing journey into the world of logic and knowledge?',
-                      style: AppTextStyles.bodyText.copyWith(fontSize: 16),
-                      textAlign: TextAlign.center,
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.grey,
+                          side: BorderSide(color: AppColors.grey.withOpacity(0.3)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            vertical: screenWidth > 375 ? 15 : 12,
+                          ),
+                        ),
+                        child: Text(
+                          'Back',
+                          style: TextStyle(fontSize: screenWidth * 0.04),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: AppSizes.paddingMedium),
+                    Expanded(
+                      flex: 2,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _navigateToMainApp();
+                        },
+                        style: AppButtonStyles.successButton.copyWith(
+                          padding: WidgetStateProperty.all(
+                            EdgeInsets.symmetric(
+                              vertical: screenWidth > 375 ? 15 : 12,
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          'Let\'s go!',
+                          style: TextStyle(fontSize: screenWidth * 0.04),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ),
-              
-              const SizedBox(height: AppSizes.paddingMedium),
-              
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSizes.paddingMedium,
-                  vertical: AppSizes.paddingSmall,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.green.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
-                ),
-                child: Text(
-                  'Age group: ${_getAgeRangeLabel()}',
-                  style: AppTextStyles.captionBold.copyWith(
-                    color: AppColors.green,
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: AppSizes.paddingXLarge),
-              
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.grey,
-                        side: BorderSide(color: AppColors.grey.withOpacity(0.3)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                      ),
-                      child: const Text('Back'),
-                    ),
-                  ),
-                  const SizedBox(width: AppSizes.paddingMedium),
-                  Expanded(
-                    flex: 2,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        _navigateToMainApp();
-                      },
-                      style: AppButtonStyles.successButton.copyWith(
-                        padding: WidgetStateProperty.all(
-                          const EdgeInsets.symmetric(vertical: 15),
-                        ),
-                      ),
-                      child: const Text('Let\'s Start!'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -289,7 +324,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
     if (_nameController.text.trim().isEmpty) {
       message = 'Please enter your name 📝';
     } else if (_selectedAvatar == null) {
-      message = 'Choose your avatar 🎭';
+      message = 'Select your avatar 🎭';
     } else if (_selectedAge == null) {
       message = 'Select your age 🎂';
     }
@@ -299,18 +334,18 @@ class _RegistrationScreenState extends State<RegistrationScreen>
         content: Row(
           children: [
             const Icon(Icons.warning_amber_rounded, color: Colors.white),
-            const SizedBox(width: AppSizes.paddingSmall),
+            SizedBox(width: AppSizes.paddingSmall),
             Expanded(child: Text(message)),
           ],
         ),
         backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(AppSizes.paddingLarge),
+        margin: EdgeInsets.all(AppSizes.paddingLarge),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
         ),
         action: SnackBarAction(
-          label: 'OK',
+          label: 'Got it',
           textColor: Colors.white,
           onPressed: () {},
         ),
@@ -331,13 +366,13 @@ class _RegistrationScreenState extends State<RegistrationScreen>
         content: Row(
           children: [
             const Icon(Icons.celebration, color: Colors.white),
-            const SizedBox(width: AppSizes.paddingSmall),
+            SizedBox(width: AppSizes.paddingSmall),
             Expanded(child: Text('Welcome ${_nameController.text.trim()}! 🎉')),
           ],
         ),
         backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(AppSizes.paddingLarge),
+        margin: EdgeInsets.all(AppSizes.paddingLarge),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
         ),
@@ -346,13 +381,15 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   }
 
   Widget _buildHeader() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    
     return FadeTransition(
       opacity: _fadeAnimation,
       child: Column(
         children: [
           // Logo with glow effect
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(screenWidth * 0.05),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(
@@ -364,7 +401,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
               ),
             ),
             child: Container(
-              padding: const EdgeInsets.all(15),
+              padding: EdgeInsets.all(screenWidth * 0.04),
               decoration: BoxDecoration(
                 color: AppColors.yellow,
                 shape: BoxShape.circle,
@@ -376,41 +413,41 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                   ),
                 ],
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.psychology,
-                size: 40,
+                size: screenWidth * 0.1,
                 color: AppColors.darkBlue,
               ),
             ),
           ),
           
-          const SizedBox(height: AppSizes.paddingLarge),
+          SizedBox(height: AppSizes.paddingLarge),
           
           Text(
             'Brain Road',
             style: AppTextStyles.mainTitle.copyWith(
-              fontSize: 42,
+              fontSize: screenWidth * 0.1,
               letterSpacing: 1.2,
             ),
           ),
           
-          const SizedBox(height: AppSizes.paddingSmall),
+          SizedBox(height: AppSizes.paddingSmall),
           
           Container(
             height: 4,
-            width: 80,
+            width: screenWidth * 0.2,
             decoration: BoxDecoration(
               gradient: AppTheme.yellowGradient,
               borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
             ),
           ),
           
-          const SizedBox(height: AppSizes.paddingMedium),
+          SizedBox(height: AppSizes.paddingMedium),
           
           Text(
             'Develop your logic with us!',
             style: AppTextStyles.subtitle.copyWith(
-              fontSize: 18,
+              fontSize: screenWidth * 0.045,
               fontWeight: FontWeight.w400,
             ),
             textAlign: TextAlign.center,
@@ -421,35 +458,39 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   }
 
   Widget _buildAvatarSelection() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(screenWidth * 0.02),
               decoration: BoxDecoration(
                 color: AppColors.yellow.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.face,
                 color: AppColors.darkBlue,
-                size: 20,
+                size: screenWidth * 0.05,
               ),
             ),
-            const SizedBox(width: AppSizes.paddingSmall),
+            SizedBox(width: AppSizes.paddingSmall),
             Text(
-              'Choose Your Avatar',
-              style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
+              'Select your avatar',
+              style: AppTextStyles.sectionTitle.copyWith(
+                fontSize: screenWidth * 0.045,
+              ),
             ),
           ],
         ),
         
-        const SizedBox(height: AppSizes.paddingMedium),
+        SizedBox(height: AppSizes.paddingMedium),
         
         SizedBox(
-          height: 100,
+          height: screenWidth * 0.25,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -457,10 +498,11 @@ class _RegistrationScreenState extends State<RegistrationScreen>
             itemBuilder: (context, index) {
               final avatar = avatars[index];
               final isSelected = _selectedAvatar == avatar;
+              final avatarSize = screenWidth * 0.18;
               
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                margin: const EdgeInsets.only(right: 12),
+                margin: EdgeInsets.only(right: screenWidth * 0.03),
                 child: GestureDetector(
                   onTap: () {
                     HapticFeedback.selectionClick();
@@ -469,8 +511,8 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                     });
                   },
                   child: Container(
-                    width: 70,
-                    height: 70,
+                    width: avatarSize,
+                    height: avatarSize,
                     decoration: BoxDecoration(
                       color: isSelected ? AppColors.yellow : AppColors.white,
                       borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
@@ -490,7 +532,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                       child: Text(
                         avatar,
                         style: TextStyle(
-                          fontSize: isSelected ? 30 : 26,
+                          fontSize: isSelected ? screenWidth * 0.08 : screenWidth * 0.07,
                         ),
                       ),
                     ),
@@ -505,32 +547,36 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   }
 
   Widget _buildNameInput() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(screenWidth * 0.02),
               decoration: BoxDecoration(
                 color: AppColors.green.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.edit,
                 color: AppColors.green,
-                size: 20,
+                size: screenWidth * 0.05,
               ),
             ),
-            const SizedBox(width: AppSizes.paddingSmall),
+            SizedBox(width: AppSizes.paddingSmall),
             Text(
-              'What\'s Your Name?',
-              style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
+              'What is your name?',
+              style: AppTextStyles.sectionTitle.copyWith(
+                fontSize: screenWidth * 0.045,
+              ),
             ),
           ],
         ),
         
-        const SizedBox(height: AppSizes.paddingMedium),
+        SizedBox(height: AppSizes.paddingMedium),
         
         TextField(
           controller: _nameController,
@@ -553,12 +599,14 @@ class _RegistrationScreenState extends State<RegistrationScreen>
               borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
               borderSide: BorderSide(color: AppColors.grey.withOpacity(0.2)),
             ),
-            contentPadding: const EdgeInsets.symmetric(
+            contentPadding: EdgeInsets.symmetric(
               horizontal: AppSizes.paddingLarge,
-              vertical: AppSizes.paddingMedium,
+              vertical: screenWidth > 375 ? AppSizes.paddingMedium : AppSizes.paddingSmall,
             ),
           ),
-          style: AppTextStyles.inputText,
+          style: AppTextStyles.inputText.copyWith(
+            fontSize: screenWidth * 0.04,
+          ),
           textCapitalization: TextCapitalization.words,
           maxLength: 20,
           buildCounter: (context, {required currentLength, required isFocused, maxLength}) {
@@ -578,36 +626,40 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   }
 
   Widget _buildAgeSelection() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(screenWidth * 0.02),
               decoration: BoxDecoration(
                 color: AppColors.darkBlue.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.cake,
                 color: AppColors.darkBlue,
-                size: 20,
+                size: screenWidth * 0.05,
               ),
             ),
-            const SizedBox(width: AppSizes.paddingSmall),
+            SizedBox(width: AppSizes.paddingSmall),
             Text(
-              'How Old Are You?',
-              style: AppTextStyles.sectionTitle.copyWith(fontSize: 18),
+              'How old are you?',
+              style: AppTextStyles.sectionTitle.copyWith(
+                fontSize: screenWidth * 0.045,
+              ),
             ),
           ],
         ),
         
-        const SizedBox(height: AppSizes.paddingMedium),
+        SizedBox(height: AppSizes.paddingMedium),
         
         Wrap(
-          spacing: 12,
-          runSpacing: 12,
+          spacing: screenWidth * 0.03,
+          runSpacing: screenWidth * 0.03,
           children: ageRanges.map((ageRange) {
             final isSelected = _selectedAge == ageRange['value'];
             
@@ -620,9 +672,9 @@ class _RegistrationScreenState extends State<RegistrationScreen>
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSizes.paddingLarge,
-                  vertical: AppSizes.paddingMedium,
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.05,
+                  vertical: screenWidth * 0.03,
                 ),
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.green : Colors.transparent,
@@ -644,7 +696,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                   style: TextStyle(
                     color: isSelected ? AppColors.white : AppColors.grey,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                    fontSize: 16,
+                    fontSize: screenWidth * 0.04,
                   ),
                 ),
               ),
@@ -657,6 +709,10 @@ class _RegistrationScreenState extends State<RegistrationScreen>
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final safeAreaBottom = MediaQuery.of(context).padding.bottom;
+    
     return Scaffold(
       backgroundColor: AppColors.darkBlue,
       body: Container(
@@ -673,121 +729,137 @@ class _RegistrationScreenState extends State<RegistrationScreen>
         child: SafeArea(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSizes.paddingLarge),
-              child: Column(
-                children: [
-                  const SizedBox(height: AppSizes.paddingMedium),
-                  
-                  // Header
-                  _buildHeader(),
-                  
-                  const SizedBox(height: 40),
-                  
-                  // Main Card
-                  SlideTransition(
-                    position: _slideAnimation,
-                    child: ScaleTransition(
-                      scale: _cardAnimation,
-                      child: Container(
-                        padding: const EdgeInsets.all(AppSizes.paddingXLarge),
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 30,
-                              offset: const Offset(0, 15),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            // Avatar Selection
-                            _buildAvatarSelection(),
-                            
-                            const SizedBox(height: AppSizes.paddingXXLarge),
-                            
-                            // Name Input
-                            _buildNameInput(),
-                            
-                            const SizedBox(height: AppSizes.paddingXXLarge),
-                            
-                            // Age Selection
-                            _buildAgeSelection(),
-                            
-                            const SizedBox(height: 40),
-                            
-                            // Register Button
-                            ScaleTransition(
-                              scale: _bounceAnimation,
-                              child: Container(
-                                width: double.infinity,
-                                height: AppSizes.buttonHeight,
-                                decoration: BoxDecoration(
-                                  gradient: _isFormValid 
-                                      ? AppTheme.yellowGradient
-                                      : LinearGradient(
-                                          colors: [
-                                            AppColors.grey.withOpacity(0.3),
-                                            AppColors.grey.withOpacity(0.2),
-                                          ],
-                                        ),
-                                  borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
-                                  boxShadow: [
-                                    if (_isFormValid) BoxShadow(
-                                      color: AppColors.yellow.withOpacity(0.4),
-                                      blurRadius: 15,
-                                      offset: const Offset(0, 5),
-                                    ),
-                                  ],
-                                ),
-                                child: ElevatedButton(
-                                  onPressed: _onRegister,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.transparent,
-                                    shadowColor: Colors.transparent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.rocket_launch,
-                                        color: _isFormValid ? AppColors.darkBlue : AppColors.grey,
-                                      ),
-                                      const SizedBox(width: AppSizes.paddingSmall),
-                                      Text(
-                                        'Start Adventure!',
-                                        style: AppTextStyles.buttonLarge.copyWith(
-                                          color: _isFormValid ? AppColors.darkBlue : AppColors.grey,
-                                        ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: screenHeight - 
+                    MediaQuery.of(context).padding.top - 
+                    MediaQuery.of(context).padding.bottom,
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(AppSizes.paddingLarge),
+                child: Column(
+                  children: [
+                    SizedBox(height: AppSizes.paddingMedium),
+                    
+                    // Header
+                    _buildHeader(),
+                    
+                    SizedBox(height: screenHeight * 0.05),
+                    
+                    // Main Card
+                    SlideTransition(
+                      position: _slideAnimation,
+                      child: ScaleTransition(
+                        scale: _cardAnimation,
+                        child: Container(
+                          padding: EdgeInsets.all(
+                            screenWidth > 375 ? AppSizes.paddingXLarge : AppSizes.paddingLarge,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 30,
+                                offset: const Offset(0, 15),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              // Avatar Selection
+                              _buildAvatarSelection(),
+                              
+                              SizedBox(height: screenHeight * 0.04),
+                              
+                              // Name Input
+                              _buildNameInput(),
+                              
+                              SizedBox(height: screenHeight * 0.04),
+                              
+                              // Age Selection
+                              _buildAgeSelection(),
+                              
+                              SizedBox(height: screenHeight * 0.05),
+                              
+                              // Register Button
+                              ScaleTransition(
+                                scale: _bounceAnimation,
+                                child: Container(
+                                  width: double.infinity,
+                                  height: screenWidth > 375 ? AppSizes.buttonHeight : AppSizes.buttonHeight - 5,
+                                  decoration: BoxDecoration(
+                                    gradient: _isFormValid 
+                                        ? AppTheme.yellowGradient
+                                        : LinearGradient(
+                                            colors: [
+                                              AppColors.grey.withOpacity(0.3),
+                                              AppColors.grey.withOpacity(0.2),
+                                            ],
+                                          ),
+                                    borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+                                    boxShadow: [
+                                      if (_isFormValid) BoxShadow(
+                                        color: AppColors.yellow.withOpacity(0.4),
+                                        blurRadius: 15,
+                                        offset: const Offset(0, 5),
                                       ),
                                     ],
                                   ),
+                                  child: ElevatedButton(
+                                    onPressed: _onRegister,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      shadowColor: Colors.transparent,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.rocket_launch,
+                                          color: _isFormValid ? AppColors.darkBlue : AppColors.grey,
+                                          size: screenWidth * 0.05,
+                                        ),
+                                        SizedBox(width: AppSizes.paddingSmall),
+                                        Text(
+                                          'Start Adventure!',
+                                          style: AppTextStyles.buttonLarge.copyWith(
+                                            color: _isFormValid ? AppColors.darkBlue : AppColors.grey,
+                                            fontSize: screenWidth * 0.045,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  
-                  const SizedBox(height: AppSizes.paddingXLarge),
-                  
-                  // Footer
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Text(
-                      'Ready to become smarter? 🧠✨',
-                      style: AppTextStyles.caption.copyWith(fontSize: 16),
+                    
+                    SizedBox(height: AppSizes.paddingXLarge),
+                    
+                    // Footer
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Text(
+                        'Ready to get smarter? 🧠✨',
+                        style: AppTextStyles.caption.copyWith(
+                          fontSize: screenWidth * 0.04,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                    
+                    // Bottom safe area padding
+                    SizedBox(height: safeAreaBottom > 0 ? safeAreaBottom : AppSizes.paddingLarge),
+                  ],
+                ),
               ),
             ),
           ),

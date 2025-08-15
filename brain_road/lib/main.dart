@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'screen/welcome_screen.dart';
 import 'screen/registration_screen.dart';
 import 'style/app_styles.dart';
 
@@ -26,7 +27,7 @@ class BrainRoadApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       
-      // Better iOS performance
+      // Better iOS performance and accessibility
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
@@ -36,12 +37,13 @@ class BrainRoadApp extends StatelessWidget {
           ),
           child: child!,
         );
-      },
+    },
       
       home: const SplashScreen(),
       
       // App routes
       routes: {
+        '/welcome': (context) => const WelcomeScreen(),
         '/registration': (context) => const RegistrationScreen(),
         '/home': (context) => const HomeScreen(),
       },
@@ -49,7 +51,7 @@ class BrainRoadApp extends StatelessWidget {
   }
 }
 
-/// Beautiful splash screen with animations
+/// Beautiful splash screen with animations optimized for iOS
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -78,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _initAnimations() {
     _logoController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 1800),
       vsync: this,
     );
     
@@ -88,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen>
     );
     
     _progressController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
     
@@ -105,7 +107,7 @@ class _SplashScreenState extends State<SplashScreen>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _logoController,
-      curve: const Interval(0.5, 1.0, curve: Curves.easeInOut),
+      curve: const Interval(0.4, 1.0, curve: Curves.easeInOut),
     ));
     
     _textFadeAnimation = Tween<double>(
@@ -117,7 +119,7 @@ class _SplashScreenState extends State<SplashScreen>
     ));
     
     _textSlideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.5),
+      begin: const Offset(0, 0.3),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _textController,
@@ -138,35 +140,26 @@ class _SplashScreenState extends State<SplashScreen>
     _logoController.forward();
     
     // Start text animation after delay
-    Future.delayed(const Duration(milliseconds: 800), () {
+    Future.delayed(const Duration(milliseconds: 600), () {
       if (mounted) _textController.forward();
     });
     
     // Start progress animation
-    Future.delayed(const Duration(milliseconds: 1200), () {
+    Future.delayed(const Duration(milliseconds: 1000), () {
       if (mounted) _progressController.forward();
     });
     
-    // Navigate to registration after animations
-    Future.delayed(const Duration(milliseconds: 3500), () {
+    // Navigate to welcome screen after animations
+    Future.delayed(const Duration(milliseconds: 3000), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) => 
-                const RegistrationScreen(),
+                const WelcomeScreen(),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               return FadeTransition(
                 opacity: animation,
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(1.0, 0.0),
-                    end: Offset.zero,
-                  ).animate(CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.easeInOut,
-                  )),
-                  child: child,
-                ),
+                child: child,
               );
             },
             transitionDuration: const Duration(milliseconds: 800),
@@ -186,8 +179,15 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Get safe area for iOS notch handling
+    final safeArea = MediaQuery.of(context).padding;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    
     return Scaffold(
       body: Container(
+        width: screenWidth,
+        height: screenHeight,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -199,148 +199,164 @@ class _SplashScreenState extends State<SplashScreen>
             ],
           ),
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Animated Logo
-              AnimatedBuilder(
-                animation: _logoController,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: _logoScaleAnimation.value,
-                    child: Transform.rotate(
-                      angle: _logoRotateAnimation.value * 0.1,
-                      child: Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          gradient: RadialGradient(
-                            colors: [
-                              AppColors.yellow,
-                              AppColors.yellow.withOpacity(0.8),
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSizes.paddingLarge,
+              vertical: safeArea.top > 0 ? AppSizes.paddingMedium : AppSizes.paddingLarge,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(),
+                
+                // Animated Logo
+                AnimatedBuilder(
+                  animation: _logoController,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _logoScaleAnimation.value,
+                      child: Transform.rotate(
+                        angle: _logoRotateAnimation.value * 0.1,
+                        child: Container(
+                          width: screenWidth * 0.25, // Responsive size
+                          height: screenWidth * 0.25,
+                          constraints: const BoxConstraints(
+                            minWidth: 100,
+                            maxWidth: 140,
+                            minHeight: 100,
+                            maxHeight: 140,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: RadialGradient(
+                              colors: [
+                                AppColors.yellow,
+                                AppColors.yellow.withOpacity(0.8),
+                              ],
+                            ),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.yellow.withOpacity(0.4),
+                                blurRadius: 30,
+                                spreadRadius: 5,
+                              ),
+                              BoxShadow(
+                                color: AppColors.yellow.withOpacity(0.2),
+                                blurRadius: 50,
+                                spreadRadius: 15,
+                              ),
                             ],
                           ),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.yellow.withOpacity(0.4),
-                              blurRadius: 30,
-                              spreadRadius: 5,
-                            ),
-                            BoxShadow(
-                              color: AppColors.yellow.withOpacity(0.2),
-                              blurRadius: 50,
-                              spreadRadius: 15,
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.psychology,
-                          size: 60,
-                          color: AppColors.darkBlue,
+                          child: Icon(
+                            Icons.psychology,
+                            size: screenWidth * 0.12,
+                            color: AppColors.darkBlue,
+                          ),
                         ),
                       ),
+                    );
+                  },
+                ),
+                
+                SizedBox(height: screenHeight * 0.05),
+                
+                // Animated Text
+                SlideTransition(
+                  position: _textSlideAnimation,
+                  child: FadeTransition(
+                    opacity: _textFadeAnimation,
+                    child: Column(
+                      children: [
+                        Text(
+                          'Brain Road',
+                          style: AppTextStyles.mainTitle.copyWith(
+                            fontSize: screenWidth * 0.09,
+                            letterSpacing: 2.0,
+                          ),
+                        ),
+                        
+                        SizedBox(height: screenHeight * 0.02),
+                        
+                        Container(
+                          height: 4,
+                          width: screenWidth * 0.25,
+                          decoration: BoxDecoration(
+                            gradient: AppTheme.yellowGradient,
+                            borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
+                          ),
+                        ),
+                        
+                        SizedBox(height: screenHeight * 0.03),
+                        
+                        Text(
+                          'Develop your logic',
+                          style: AppTextStyles.subtitle.copyWith(
+                            fontSize: screenWidth * 0.05,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        
+                        SizedBox(height: screenHeight * 0.01),
+                        
+                        Text(
+                          'Receive certificates',
+                          style: AppTextStyles.subtitle.copyWith(
+                            fontSize: screenWidth * 0.05,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        
+                        SizedBox(height: screenHeight * 0.01),
+                        
+                        Text(
+                          'Become smarter!',
+                          style: AppTextStyles.subtitle.copyWith(
+                            fontSize: screenWidth * 0.05,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
-              
-              const SizedBox(height: AppSizes.paddingXXLarge),
-              
-              // Animated Text
-              SlideTransition(
-                position: _textSlideAnimation,
-                child: FadeTransition(
-                  opacity: _textFadeAnimation,
-                  child: Column(
-                    children: [
-                      Text(
-                        'Brain Road',
-                        style: AppTextStyles.mainTitle.copyWith(
-                          fontSize: 38,
-                          letterSpacing: 2.0,
-                        ),
-                      ),
-                      
-                      const SizedBox(height: AppSizes.paddingMedium),
-                      
-                      Container(
-                        height: 4,
-                        width: 100,
-                        decoration: BoxDecoration(
-                          gradient: AppTheme.yellowGradient,
-                          borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
-                        ),
-                      ),
-                      
-                      const SizedBox(height: AppSizes.paddingLarge),
-                      
-                      Text(
-                        'Develop Logic',
-                        style: AppTextStyles.subtitle.copyWith(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      
-                      const SizedBox(height: AppSizes.paddingSmall),
-                      
-                      Text(
-                        'Earn Certificates',
-                        style: AppTextStyles.subtitle.copyWith(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      
-                      const SizedBox(height: AppSizes.paddingSmall),
-                      
-                      Text(
-                        'Become Smarter!',
-                        style: AppTextStyles.subtitle.copyWith(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
-              ),
-              
-              const SizedBox(height: AppSizes.paddingXXLarge * 2),
-              
-              // Animated Progress Indicator
-              AnimatedBuilder(
-                animation: _progressAnimation,
-                builder: (context, child) {
-                  return Column(
-                    children: [
-                      SizedBox(
-                        width: 200,
-                        height: 6,
-                        child: LinearProgressIndicator(
-                          value: _progressAnimation.value,
-                          backgroundColor: AppColors.white.withOpacity(0.2),
-                          valueColor: AlwaysStoppedAnimation<Color>(AppColors.yellow),
-                          borderRadius: BorderRadius.circular(3),
+                
+                const Spacer(),
+                
+                // Animated Progress Indicator
+                AnimatedBuilder(
+                  animation: _progressAnimation,
+                  builder: (context, child) {
+                    return Column(
+                      children: [
+                        SizedBox(
+                          width: screenWidth * 0.5,
+                          height: 6,
+                          child: LinearProgressIndicator(
+                            value: _progressAnimation.value,
+                            backgroundColor: AppColors.white.withOpacity(0.2),
+                            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.yellow),
+                            borderRadius: BorderRadius.circular(3),
+                          ),
                         ),
-                      ),
-                      
-                      const SizedBox(height: AppSizes.paddingMedium),
-                      
-                      Text(
-                        'Loading...',
-                        style: AppTextStyles.caption.copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
+                        
+                        SizedBox(height: screenHeight * 0.02),
+                        
+                        Text(
+                          'Loading...',
+                          style: AppTextStyles.caption.copyWith(
+                            fontSize: screenWidth * 0.04,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ],
+                      ],
+                    );
+                  },
+                ),
+                
+                SizedBox(height: safeArea.bottom > 0 ? AppSizes.paddingLarge : AppSizes.paddingXLarge),
+              ],
+            ),
           ),
         ),
       ),
@@ -354,6 +370,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final safeArea = MediaQuery.of(context).padding;
+    
     return Scaffold(
       backgroundColor: AppColors.darkBlue,
       appBar: AppBar(
@@ -363,56 +382,68 @@ class HomeScreen extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
       ),
-      body: Center(
-        child: Container(
-          margin: const EdgeInsets.all(AppSizes.paddingLarge),
-          padding: const EdgeInsets.all(AppSizes.paddingXLarge),
-          decoration: AppDecorations.cardDecoration,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(AppSizes.paddingLarge),
-                decoration: BoxDecoration(
-                  color: AppColors.yellow.withOpacity(0.2),
-                  shape: BoxShape.circle,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            margin: EdgeInsets.all(AppSizes.paddingLarge),
+            padding: EdgeInsets.all(AppSizes.paddingXLarge),
+            decoration: AppDecorations.cardDecoration,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(AppSizes.paddingLarge),
+                  decoration: BoxDecoration(
+                    color: AppColors.yellow.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    '🎉', 
+                    style: TextStyle(fontSize: screenWidth * 0.15),
+                  ),
                 ),
-                child: const Text('🎉', style: TextStyle(fontSize: 60)),
-              ),
-              
-              const SizedBox(height: AppSizes.paddingLarge),
-              
-              Text(
-                'Welcome!',
-                style: AppTextStyles.sectionTitle.copyWith(fontSize: 28),
-              ),
-              
-              const SizedBox(height: AppSizes.paddingMedium),
-              
-              Text(
-                'You have successfully registered for Brain Road! This will be the main screen of the app with quizzes and challenges.',
-                style: AppTextStyles.bodyText.copyWith(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: AppSizes.paddingXLarge),
-              
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const RegistrationScreen(),
+                
+                SizedBox(height: AppSizes.paddingLarge),
+                
+                Text(
+                  'Welcome!',
+                  style: AppTextStyles.sectionTitle.copyWith(
+                    fontSize: screenWidth * 0.07,
+                  ),
+                ),
+                
+                SizedBox(height: AppSizes.paddingMedium),
+                
+                Text(
+                  'You have successfully registered for Brain Road! This will be the main screen of the app with quizzes and tasks.',
+                  style: AppTextStyles.bodyText.copyWith(
+                    fontSize: screenWidth * 0.04,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                
+                SizedBox(height: AppSizes.paddingXLarge),
+                
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => const WelcomeScreen(),
+                        ),
+                      );
+                    },
+                    style: AppButtonStyles.primaryButton,
+                    icon: const Icon(Icons.arrow_back, color: AppColors.darkBlue),
+                    label: const Text(
+                      'Back to Welcome',
+                      style: TextStyle(color: AppColors.darkBlue),
                     ),
-                  );
-                },
-                style: AppButtonStyles.primaryButton,
-                icon: const Icon(Icons.arrow_back, color: AppColors.darkBlue),
-                label: const Text(
-                  'Back to Registration',
-                  style: TextStyle(color: AppColors.darkBlue),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

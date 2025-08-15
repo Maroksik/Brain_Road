@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../style/app_styles.dart';
+import '../services/user_preferences.dart';
 
 class MainMenuScreen extends StatefulWidget {
   final String userName;
@@ -35,24 +36,24 @@ class _MainMenuScreenState extends State<MainMenuScreen>
   final List<MenuItemData> _menuItems = [
     MenuItemData(
       icon: Icons.workspace_premium,
-      title: 'Мої сертифікати',
-      subtitle: 'Переглянути досягнення',
+      title: 'My certificates',
+      subtitle: 'View achievements',
       emoji: '🏆',
       gradient: [AppColors.yellow, AppColors.lightYellow],
       route: '/certificates',
     ),
     MenuItemData(
       icon: Icons.handshake,
-      title: 'Наші партнери',
-      subtitle: 'Де можна відвідати',
+      title: 'Our partners',
+      subtitle: 'Where to visit',
       emoji: '🤝',
       gradient: [AppColors.green, AppColors.lightGreen],
       route: '/partners',
     ),
     MenuItemData(
       icon: Icons.quiz,
-      title: 'Квізи',
-      subtitle: 'Розвивай логіку',
+      title: 'Quizzes',
+      subtitle: 'Develop your logic',
       emoji: '🧩',
       gradient: [AppColors.darkBlue, AppColors.lightBlue],
       route: '/quizzes',
@@ -152,6 +153,321 @@ class _MainMenuScreenState extends State<MainMenuScreen>
     _bounceController.dispose();
     _floatController.dispose();
     super.dispose();
+  }
+
+  void _showSettingsDialog() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.7),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: screenWidth * 0.85,
+          ),
+          padding: EdgeInsets.all(
+            screenWidth > 375 ? AppSizes.paddingXLarge : AppSizes.paddingLarge,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 30,
+                offset: const Offset(0, 15),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Settings icon
+              Container(
+                width: screenWidth * 0.15,
+                height: screenWidth * 0.15,
+                constraints: const BoxConstraints(
+                  minWidth: 60,
+                  maxWidth: 80,
+                  minHeight: 60,
+                  maxHeight: 80,
+                ),
+                decoration: BoxDecoration(
+                  gradient: AppTheme.primaryGradient,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.darkBlue.withOpacity(0.3),
+                      blurRadius: 15,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.settings,
+                  color: AppColors.white,
+                  size: screenWidth * 0.08,
+                ),
+              ),
+              
+              SizedBox(height: AppSizes.paddingLarge),
+              
+              Text(
+                'Settings ⚙️',
+                style: AppTextStyles.sectionTitle.copyWith(
+                  fontSize: screenWidth * 0.05,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              
+              SizedBox(height: AppSizes.paddingLarge),
+              
+              // User info card
+              Container(
+                padding: EdgeInsets.all(AppSizes.paddingMedium),
+                decoration: BoxDecoration(
+                  color: AppColors.grey.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text(widget.userAvatar, style: TextStyle(fontSize: screenWidth * 0.08)),
+                        SizedBox(width: AppSizes.paddingMedium),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.userName,
+                                style: AppTextStyles.cardTitle.copyWith(
+                                  fontSize: screenWidth * 0.045,
+                                ),
+                              ),
+                              Text(
+                                widget.userAge,
+                                style: AppTextStyles.bodyText.copyWith(
+                                  fontSize: screenWidth * 0.04,
+                                  color: AppColors.green,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              
+              SizedBox(height: AppSizes.paddingLarge),
+              
+              // Reset button
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _showResetDialog();
+                  },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.error,
+                    side: const BorderSide(color: AppColors.error),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      vertical: screenWidth > 375 ? 15 : 12,
+                    ),
+                  ),
+                  icon: const Icon(Icons.refresh),
+                  label: Text(
+                    'Reset data',
+                    style: TextStyle(fontSize: screenWidth * 0.04),
+                  ),
+                ),
+              ),
+              
+              SizedBox(height: AppSizes.paddingMedium),
+              
+              // Close button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: AppButtonStyles.primaryButton.copyWith(
+                    padding: WidgetStateProperty.all(
+                      EdgeInsets.symmetric(
+                        vertical: screenWidth > 375 ? 15 : 12,
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    'Close',
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.04,
+                      color: AppColors.darkBlue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showResetDialog() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.7),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: screenWidth * 0.85,
+          ),
+          padding: EdgeInsets.all(
+            screenWidth > 375 ? AppSizes.paddingXLarge : AppSizes.paddingLarge,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 30,
+                offset: const Offset(0, 15),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Warning icon
+              Container(
+                width: screenWidth * 0.15,
+                height: screenWidth * 0.15,
+                constraints: const BoxConstraints(
+                  minWidth: 60,
+                  maxWidth: 80,
+                  minHeight: 60,
+                  maxHeight: 80,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.error,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.error.withOpacity(0.3),
+                      blurRadius: 15,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.warning,
+                  color: AppColors.white,
+                  size: screenWidth * 0.08,
+                ),
+              ),
+              
+              SizedBox(height: AppSizes.paddingLarge),
+              
+              Text(
+                'Reset data? ⚠️',
+                style: AppTextStyles.sectionTitle.copyWith(
+                  fontSize: screenWidth * 0.05,
+                  color: AppColors.error,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              
+              SizedBox(height: AppSizes.paddingSmall),
+              
+              Text(
+                'This will delete all your data and return you to the welcome screen. Are you sure?',
+                style: AppTextStyles.bodyText.copyWith(
+                  fontSize: screenWidth * 0.04,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              
+              SizedBox(height: AppSizes.paddingXLarge),
+              
+              // Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.grey,
+                        side: BorderSide(color: AppColors.grey.withOpacity(0.3)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          vertical: screenWidth > 375 ? 15 : 12,
+                        ),
+                      ),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(fontSize: screenWidth * 0.04),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: AppSizes.paddingMedium),
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _resetUserData();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.error,
+                        foregroundColor: AppColors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          vertical: screenWidth > 375 ? 15 : 12,
+                        ),
+                      ),
+                      child: Text(
+                        'Yes, reset',
+                        style: TextStyle(fontSize: screenWidth * 0.04),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _resetUserData() async {
+    // Очищуємо всі дані користувача
+    await UserPreferences.clearUserData();
+    
+    if (mounted) {
+      // Навігуємо назад до splash screen, який потім перенаправить до welcome
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        '/',
+        (route) => false,
+      );
+    }
   }
 
   void _onMenuItemTap(MenuItemData item) {
@@ -345,7 +661,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Привіт, ${widget.userName}! 👋',
+                      'Hello, ${widget.userName}! 👋',
                       style: AppTextStyles.sectionTitle.copyWith(
                         fontSize: screenWidth * 0.045,
                       ),
@@ -363,7 +679,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
                         borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
                       ),
                       child: Text(
-                        '${widget.userAge} років',
+                        widget.userAge,
                         style: AppTextStyles.captionBold.copyWith(
                           color: AppColors.white,
                           fontSize: screenWidth * 0.035,
@@ -374,7 +690,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
                     SizedBox(height: screenHeight * 0.01),
                     
                     Text(
-                      'Готовий розвивати логіку? 🧠',
+                      'Ready to develop your logic? 🧠',
                       style: AppTextStyles.bodyText.copyWith(
                         fontSize: screenWidth * 0.04,
                         fontWeight: FontWeight.w500,
@@ -393,7 +709,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
                 child: IconButton(
                   onPressed: () {
                     HapticFeedback.lightImpact();
-                    // Add settings functionality later
+                    _showSettingsDialog();
                   },
                   icon: Icon(
                     Icons.settings,
@@ -660,7 +976,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
                               ),
                               SizedBox(width: AppSizes.paddingMedium),
                               Text(
-                                'Головне меню',
+                                'Main menu',
                                 style: AppTextStyles.sectionTitle.copyWith(
                                   color: AppColors.white,
                                   fontSize: screenWidth * 0.055,
@@ -724,7 +1040,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Розвивай свій мозок',
+                                        'Develop your brain',
                                         style: AppTextStyles.bodyTextWhite.copyWith(
                                           fontSize: screenWidth * 0.04,
                                           fontWeight: FontWeight.bold,
@@ -732,7 +1048,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
                                       ),
                                       SizedBox(height: screenWidth * 0.01),
                                       Text(
-                                        'Кожен день нові виклики та досягнення!',
+                                        'Every day brings new challenges and achievements!',
                                         style: AppTextStyles.caption.copyWith(
                                           fontSize: screenWidth * 0.035,
                                         ),

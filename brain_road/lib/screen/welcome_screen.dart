@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../style/app_styles.dart';
+import '../services/user_preferences.dart';
 import 'registration_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -142,6 +143,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   void _navigateToRegistration() {
+    // Позначаємо що перший запуск завершений
+    UserPreferences.setFirstLaunchCompleted();
+    
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../style/app_styles.dart';
+import '../services/user_preferences.dart';
+import 'main_menu_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -32,9 +34,9 @@ class _RegistrationScreenState extends State<RegistrationScreen>
 
   // Age ranges
   final List<Map<String, String>> ageRanges = [
-    {'label': '5-7 років', 'value': '5-7'},
-    {'label': '8-10 років', 'value': '8-10'},
-    {'label': '11-13 років', 'value': '11-13'},
+    {'label': '5-7 years', 'value': '5-7'},
+    {'label': '8-10 years', 'value': '8-10'},
+    {'label': '11-13 years', 'value': '11-13'},
   ];
 
   @override
@@ -122,9 +124,20 @@ class _RegistrationScreenState extends State<RegistrationScreen>
       _selectedAvatar != null &&
       _selectedAge != null;
 
-  void _onRegister() {
+  void _onRegister() async {
     if (_isFormValid) {
       HapticFeedback.lightImpact();
+      
+      // Зберігаємо дані користувача
+      await UserPreferences.saveUserData(
+        name: _nameController.text.trim(),
+        avatar: _selectedAvatar!,
+        age: _selectedAge!,
+      );
+      
+      // Позначаємо перший запуск як завершений
+      await UserPreferences.setFirstLaunchCompleted();
+      
       _showSuccessDialog();
     } else {
       _showErrorMessage();
@@ -294,7 +307,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.of(context).pop();
-                          _navigateToMainApp();
+                          _navigateToMainMenu();
                         },
                         style: AppButtonStyles.successButton.copyWith(
                           padding: WidgetStateProperty.all(
@@ -360,14 +373,44 @@ class _RegistrationScreenState extends State<RegistrationScreen>
     )['label']!;
   }
 
-  void _navigateToMainApp() {
+  void _navigateToMainMenu() {
+    // Отримуємо дані користувача
+    final userData = UserPreferences.userData;
+    
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => 
+            MainMenuScreen(
+              userName: userData['name']!,
+              userAvatar: userData['avatar']!,
+              userAge: userData['ageLabel']!,
+            ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeInOut,
+              )),
+              child: child,
+            ),
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 600),
+      ),
+    );
+    
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
             const Icon(Icons.celebration, color: Colors.white),
             SizedBox(width: AppSizes.paddingSmall),
-            Expanded(child: Text('Welcome ${_nameController.text.trim()}! 🎉')),
+            Expanded(child: Text('Ласкаво просимо, ${userData['name']}! 🎉')),
           ],
         ),
         backgroundColor: AppColors.success,

@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'screen/welcome_screen.dart';
 import 'screen/registration_screen.dart';
+import 'screen/main_menu_screen.dart';
 import 'style/app_styles.dart';
+import 'services/user_preferences.dart';
 
-void main() {
+void main() async {
+  // Забезпечуємо ініціалізацію Flutter widgets
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Ініціалізуємо SharedPreferences
+  await UserPreferences.init();
+  
   runApp(const BrainRoadApp());
 }
 
@@ -45,7 +53,6 @@ class BrainRoadApp extends StatelessWidget {
       routes: {
         '/welcome': (context) => const WelcomeScreen(),
         '/registration': (context) => const RegistrationScreen(),
-        '/home': (context) => const HomeScreen(),
       },
     );
   }
@@ -149,24 +156,52 @@ class _SplashScreenState extends State<SplashScreen>
       if (mounted) _progressController.forward();
     });
     
-    // Navigate to welcome screen after animations
+    // Navigate to appropriate screen after animations
     Future.delayed(const Duration(milliseconds: 3000), () {
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => 
-                const WelcomeScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
+        _navigateToNextScreen();
       }
     });
+  }
+
+  void _navigateToNextScreen() {
+    // Перевіряємо чи користувач вже зареєстрований
+    if (UserPreferences.hasUserData && UserPreferences.isRegistrationCompleted) {
+      // Якщо так - переходимо до головного меню
+      final userData = UserPreferences.userData;
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => 
+              MainMenuScreen(
+                userName: userData['name']!,
+                userAvatar: userData['avatar']!,
+                userAge: userData['ageLabel']!,
+              ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 800),
+        ),
+      );
+    } else {
+      // Якщо ні - переходимо до welcome screen
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => 
+              const WelcomeScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 800),
+        ),
+      );
+    }
   }
 
   @override
@@ -355,93 +390,6 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 
                 SizedBox(height: safeArea.bottom > 0 ? AppSizes.paddingLarge : AppSizes.paddingXLarge),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Temporary home screen (will be replaced later)
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final safeArea = MediaQuery.of(context).padding;
-    
-    return Scaffold(
-      backgroundColor: AppColors.darkBlue,
-      appBar: AppBar(
-        title: const Text('Brain Road'),
-        backgroundColor: AppColors.darkBlue,
-        foregroundColor: AppColors.white,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            margin: EdgeInsets.all(AppSizes.paddingLarge),
-            padding: EdgeInsets.all(AppSizes.paddingXLarge),
-            decoration: AppDecorations.cardDecoration,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(AppSizes.paddingLarge),
-                  decoration: BoxDecoration(
-                    color: AppColors.yellow.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    '🎉', 
-                    style: TextStyle(fontSize: screenWidth * 0.15),
-                  ),
-                ),
-                
-                SizedBox(height: AppSizes.paddingLarge),
-                
-                Text(
-                  'Welcome!',
-                  style: AppTextStyles.sectionTitle.copyWith(
-                    fontSize: screenWidth * 0.07,
-                  ),
-                ),
-                
-                SizedBox(height: AppSizes.paddingMedium),
-                
-                Text(
-                  'You have successfully registered for Brain Road! This will be the main screen of the app with quizzes and tasks.',
-                  style: AppTextStyles.bodyText.copyWith(
-                    fontSize: screenWidth * 0.04,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                
-                SizedBox(height: AppSizes.paddingXLarge),
-                
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => const WelcomeScreen(),
-                        ),
-                      );
-                    },
-                    style: AppButtonStyles.primaryButton,
-                    icon: const Icon(Icons.arrow_back, color: AppColors.darkBlue),
-                    label: const Text(
-                      'Back to Welcome',
-                      style: TextStyle(color: AppColors.darkBlue),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

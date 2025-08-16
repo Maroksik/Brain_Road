@@ -410,7 +410,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
           children: [
             const Icon(Icons.celebration, color: Colors.white),
             SizedBox(width: AppSizes.paddingSmall),
-            Expanded(child: Text('Ласкаво просимо, ${userData['name']}! 🎉')),
+            Expanded(child: Text('Welcome, ${userData['name']}! 🎉')),
           ],
         ),
         backgroundColor: AppColors.success,

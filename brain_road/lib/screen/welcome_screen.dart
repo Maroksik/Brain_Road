@@ -492,8 +492,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 ),
                 label: Text(
                   _currentPage == _pages.length - 1 
-                      ? 'Почати!' 
-                      : 'Далі',
+                      ? 'Let\'s Go!' 
+                      : 'Next',
                   style: AppTextStyles.buttonMedium.copyWith(
                     color: AppColors.white,
                   ),

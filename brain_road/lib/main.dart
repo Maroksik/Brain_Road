@@ -5,6 +5,7 @@ import 'screen/registration_screen.dart';
 import 'screen/main_menu_screen.dart';
 import 'style/app_styles.dart';
 import 'services/user_preferences.dart';
+import 'screen/partners_screen.dart';
 
 void main() async {
   // Забезпечуємо ініціалізацію Flutter widgets
@@ -53,6 +54,7 @@ class BrainRoadApp extends StatelessWidget {
       routes: {
         '/welcome': (context) => const WelcomeScreen(),
         '/registration': (context) => const RegistrationScreen(),
+        '/partners': (context) => const PartnersScreen(),
       },
     );
   }

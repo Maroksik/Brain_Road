@@ -473,8 +473,13 @@ class _MainMenuScreenState extends State<MainMenuScreen>
   void _onMenuItemTap(MenuItemData item) {
     HapticFeedback.lightImpact();
     
-    // Show coming soon dialog for now
-    _showComingSoonDialog(item);
+    // Navigate to the appropriate screen
+    if (item.route == '/partners') {
+      Navigator.of(context).pushNamed('/partners');
+    } else {
+      // Show coming soon dialog for other routes
+      _showComingSoonDialog(item);
+    }
   }
 
   void _showComingSoonDialog(MenuItemData item) {

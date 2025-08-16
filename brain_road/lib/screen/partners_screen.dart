@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:math' as math;
 import '../style/app_styles.dart';
 
 class PartnersScreen extends StatefulWidget {
@@ -23,11 +22,7 @@ class _PartnersScreenState extends State<PartnersScreen>
   late Animation<double> _floatAnimation;
   late Animation<double> _scaleAnimation;
 
-  late PageController _pageController;
-  late ScrollController _scrollController;
-  
   String _selectedCategory = 'All';
-  int _currentPartnerIndex = 0;
 
   // Partner categories
   final List<String> _categories = [
@@ -133,8 +128,6 @@ class _PartnersScreenState extends State<PartnersScreen>
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.85);
-    _scrollController = ScrollController();
     _initAnimations();
     _startAnimations();
   }
@@ -224,8 +217,6 @@ class _PartnersScreenState extends State<PartnersScreen>
     _slideController.dispose();
     _bounceController.dispose();
     _floatController.dispose();
-    _pageController.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -242,9 +233,7 @@ class _PartnersScreenState extends State<PartnersScreen>
   }
 
   void _showPartnerDetails(PartnerData partner) {
-    final screenSize = MediaQuery.of(context).size;
-    final isTablet = screenSize.shortestSide >= 600;
-    final isLandscape = screenSize.width > screenSize.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     
     showDialog(
       context: context,
@@ -253,13 +242,15 @@ class _PartnersScreenState extends State<PartnersScreen>
         backgroundColor: Colors.transparent,
         child: Container(
           constraints: BoxConstraints(
-            maxWidth: isTablet ? 500 : screenSize.width * 0.9,
-            maxHeight: isLandscape ? screenSize.height * 0.9 : screenSize.height * 0.8,
+            maxWidth: screenWidth * 0.9,
+            maxHeight: MediaQuery.of(context).size.height * 0.8,
           ),
-          padding: EdgeInsets.all(isTablet ? 30 : 20),
+          padding: EdgeInsets.all(
+            screenWidth > 375 ? AppSizes.paddingXLarge : AppSizes.paddingLarge,
+          ),
           decoration: BoxDecoration(
             color: AppColors.white,
-            borderRadius: BorderRadius.circular(isTablet ? 30 : 25),
+            borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.2),
@@ -269,14 +260,19 @@ class _PartnersScreenState extends State<PartnersScreen>
             ],
           ),
           child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Partner icon with gradient background
                 Container(
-                  width: isTablet ? 100 : 80,
-                  height: isTablet ? 100 : 80,
+                  width: screenWidth * 0.2,
+                  height: screenWidth * 0.2,
+                  constraints: const BoxConstraints(
+                    minWidth: 80,
+                    maxWidth: 100,
+                    minHeight: 80,
+                    maxHeight: 100,
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: partner.gradient),
                     shape: BoxShape.circle,
@@ -291,43 +287,43 @@ class _PartnersScreenState extends State<PartnersScreen>
                   child: Center(
                     child: Text(
                       partner.icon,
-                      style: TextStyle(fontSize: isTablet ? 50 : 40),
+                      style: TextStyle(fontSize: screenWidth * 0.1),
                     ),
                   ),
                 ),
                 
-                SizedBox(height: isTablet ? 24 : 20),
+                SizedBox(height: AppSizes.paddingLarge),
                 
                 // Partner name and type
                 Text(
                   partner.name,
                   style: AppTextStyles.sectionTitle.copyWith(
-                    fontSize: isTablet ? 24 : 20,
+                    fontSize: screenWidth * 0.055,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 
-                SizedBox(height: isTablet ? 12 : 8),
+                SizedBox(height: AppSizes.paddingSmall),
                 
                 Container(
                   padding: EdgeInsets.symmetric(
-                    horizontal: isTablet ? 16 : 12,
-                    vertical: isTablet ? 8 : 6,
+                    horizontal: AppSizes.paddingMedium,
+                    vertical: AppSizes.paddingSmall,
                   ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: partner.gradient),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
                   ),
                   child: Text(
                     partner.type,
                     style: AppTextStyles.captionBold.copyWith(
                       color: AppColors.white,
-                      fontSize: isTablet ? 16 : 14,
+                      fontSize: screenWidth * 0.035,
                     ),
                   ),
                 ),
                 
-                SizedBox(height: isTablet ? 16 : 12),
+                SizedBox(height: AppSizes.paddingMedium),
                 
                 // Rating
                 Row(
@@ -336,46 +332,46 @@ class _PartnersScreenState extends State<PartnersScreen>
                     Icon(
                       Icons.star,
                       color: AppColors.yellow,
-                      size: isTablet ? 24 : 20,
+                      size: screenWidth * 0.05,
                     ),
-                    SizedBox(width: 4),
+                    SizedBox(width: AppSizes.paddingXSmall),
                     Text(
                       partner.rating.toString(),
                       style: AppTextStyles.bodyText.copyWith(
-                        fontSize: isTablet ? 18 : 16,
+                        fontSize: screenWidth * 0.04,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       ' / 5.0',
                       style: AppTextStyles.bodyText.copyWith(
-                        fontSize: isTablet ? 18 : 16,
+                        fontSize: screenWidth * 0.04,
                         color: AppColors.grey.withOpacity(0.7),
                       ),
                     ),
                   ],
                 ),
                 
-                SizedBox(height: isTablet ? 24 : 20),
+                SizedBox(height: AppSizes.paddingLarge),
                 
                 // Description
                 Text(
                   partner.description,
                   style: AppTextStyles.bodyText.copyWith(
-                    fontSize: isTablet ? 18 : 16,
+                    fontSize: screenWidth * 0.04,
                     height: 1.5,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 
-                SizedBox(height: isTablet ? 24 : 20),
+                SizedBox(height: AppSizes.paddingLarge),
                 
                 // Benefits section
                 Container(
-                  padding: EdgeInsets.all(isTablet ? 20 : 16),
+                  padding: EdgeInsets.all(AppSizes.paddingLarge),
                   decoration: BoxDecoration(
                     color: AppColors.grey.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(isTablet ? 20 : 15),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -384,33 +380,33 @@ class _PartnersScreenState extends State<PartnersScreen>
                         children: [
                           Text(
                             '🎁',
-                            style: TextStyle(fontSize: isTablet ? 28 : 24),
+                            style: TextStyle(fontSize: screenWidth * 0.06),
                           ),
-                          SizedBox(width: isTablet ? 12 : 8),
+                          SizedBox(width: AppSizes.paddingSmall),
                           Text(
                             'Your Benefits',
                             style: AppTextStyles.cardTitle.copyWith(
-                              fontSize: isTablet ? 20 : 18,
+                              fontSize: screenWidth * 0.045,
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: isTablet ? 16 : 12),
+                      SizedBox(height: AppSizes.paddingMedium),
                       ...partner.benefits.map((benefit) => Padding(
-                        padding: EdgeInsets.only(bottom: isTablet ? 12 : 8),
+                        padding: EdgeInsets.only(bottom: AppSizes.paddingSmall),
                         child: Row(
                           children: [
                             Icon(
                               Icons.check_circle,
                               color: AppColors.green,
-                              size: isTablet ? 24 : 20,
+                              size: screenWidth * 0.05,
                             ),
-                            SizedBox(width: isTablet ? 12 : 8),
+                            SizedBox(width: AppSizes.paddingSmall),
                             Expanded(
                               child: Text(
                                 benefit,
                                 style: AppTextStyles.bodyText.copyWith(
-                                  fontSize: isTablet ? 18 : 16,
+                                  fontSize: screenWidth * 0.04,
                                 ),
                               ),
                             ),
@@ -421,7 +417,7 @@ class _PartnersScreenState extends State<PartnersScreen>
                   ),
                 ),
                 
-                SizedBox(height: isTablet ? 32 : 24),
+                SizedBox(height: AppSizes.paddingXLarge),
                 
                 // Action buttons
                 Row(
@@ -433,19 +429,19 @@ class _PartnersScreenState extends State<PartnersScreen>
                           foregroundColor: AppColors.grey,
                           side: BorderSide(color: AppColors.grey.withOpacity(0.3)),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
                           ),
                           padding: EdgeInsets.symmetric(
-                            vertical: isTablet ? 16 : 12,
+                            vertical: screenWidth > 375 ? 15 : 12,
                           ),
                         ),
                         child: Text(
                           'Close',
-                          style: TextStyle(fontSize: isTablet ? 18 : 16),
+                          style: TextStyle(fontSize: screenWidth * 0.04),
                         ),
                       ),
                     ),
-                    SizedBox(width: isTablet ? 16 : 12),
+                    SizedBox(width: AppSizes.paddingMedium),
                     Expanded(
                       flex: 2,
                       child: ElevatedButton(
@@ -457,15 +453,15 @@ class _PartnersScreenState extends State<PartnersScreen>
                           backgroundColor: partner.gradient[0],
                           foregroundColor: AppColors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
                           ),
                           padding: EdgeInsets.symmetric(
-                            vertical: isTablet ? 16 : 12,
+                            vertical: screenWidth > 375 ? 15 : 12,
                           ),
                         ),
                         child: Text(
                           'Get Certificate',
-                          style: TextStyle(fontSize: isTablet ? 18 : 16),
+                          style: TextStyle(fontSize: screenWidth * 0.04),
                         ),
                       ),
                     ),
@@ -480,8 +476,7 @@ class _PartnersScreenState extends State<PartnersScreen>
   }
 
   void _showCertificateInfo(PartnerData partner) {
-    final screenSize = MediaQuery.of(context).size;
-    final isTablet = screenSize.shortestSide >= 600;
+    final screenWidth = MediaQuery.of(context).size.width;
     
     showDialog(
       context: context,
@@ -490,12 +485,14 @@ class _PartnersScreenState extends State<PartnersScreen>
         backgroundColor: Colors.transparent,
         child: Container(
           constraints: BoxConstraints(
-            maxWidth: isTablet ? 450 : screenSize.width * 0.85,
+            maxWidth: screenWidth * 0.85,
           ),
-          padding: EdgeInsets.all(isTablet ? 30 : 20),
+          padding: EdgeInsets.all(
+            screenWidth > 375 ? AppSizes.paddingXLarge : AppSizes.paddingLarge,
+          ),
           decoration: BoxDecoration(
             color: AppColors.white,
-            borderRadius: BorderRadius.circular(isTablet ? 30 : 25),
+            borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.2),
@@ -509,8 +506,14 @@ class _PartnersScreenState extends State<PartnersScreen>
             children: [
               // Certificate icon
               Container(
-                width: isTablet ? 80 : 60,
-                height: isTablet ? 80 : 60,
+                width: screenWidth * 0.15,
+                height: screenWidth * 0.15,
+                constraints: const BoxConstraints(
+                  minWidth: 60,
+                  maxWidth: 80,
+                  minHeight: 60,
+                  maxHeight: 80,
+                ),
                 decoration: BoxDecoration(
                   gradient: AppTheme.yellowGradient,
                   shape: BoxShape.circle,
@@ -525,36 +528,36 @@ class _PartnersScreenState extends State<PartnersScreen>
                 child: Center(
                   child: Text(
                     '🏆',
-                    style: TextStyle(fontSize: isTablet ? 40 : 32),
+                    style: TextStyle(fontSize: screenWidth * 0.08),
                   ),
                 ),
               ),
               
-              SizedBox(height: isTablet ? 24 : 20),
+              SizedBox(height: AppSizes.paddingLarge),
               
               Text(
                 'How to get certificate? 🎯',
                 style: AppTextStyles.sectionTitle.copyWith(
-                  fontSize: isTablet ? 22 : 20,
+                  fontSize: screenWidth * 0.05,
                 ),
                 textAlign: TextAlign.center,
               ),
               
-              SizedBox(height: isTablet ? 12 : 8),
+              SizedBox(height: AppSizes.paddingSmall),
               
               Text(
                 'Complete tasks and quizzes to earn certificates for ${partner.name}!',
                 style: AppTextStyles.bodyText.copyWith(
-                  fontSize: isTablet ? 18 : 16,
+                  fontSize: screenWidth * 0.04,
                 ),
                 textAlign: TextAlign.center,
               ),
               
-              SizedBox(height: isTablet ? 24 : 20),
+              SizedBox(height: AppSizes.paddingLarge),
               
               // Steps container
               Container(
-                padding: EdgeInsets.all(isTablet ? 20 : 16),
+                padding: EdgeInsets.all(AppSizes.paddingLarge),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -562,7 +565,7 @@ class _PartnersScreenState extends State<PartnersScreen>
                       AppColors.green.withOpacity(0.1),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(isTablet ? 20 : 15),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
                   border: Border.all(
                     color: AppColors.yellow.withOpacity(0.3),
                     width: 2,
@@ -570,16 +573,16 @@ class _PartnersScreenState extends State<PartnersScreen>
                 ),
                 child: Column(
                   children: [
-                    _buildStep('1', 'Complete quizzes', '🧩', isTablet),
-                    SizedBox(height: isTablet ? 16 : 12),
-                    _buildStep('2', 'Earn points', '⭐', isTablet),
-                    SizedBox(height: isTablet ? 16 : 12),
-                    _buildStep('3', 'Get certificate', '🎫', isTablet),
+                    _buildStep('1', 'Complete quizzes', '🧩'),
+                    SizedBox(height: AppSizes.paddingMedium),
+                    _buildStep('2', 'Earn points', '⭐'),
+                    SizedBox(height: AppSizes.paddingMedium),
+                    _buildStep('3', 'Get certificate', '🎫'),
                   ],
                 ),
               ),
               
-              SizedBox(height: isTablet ? 32 : 24),
+              SizedBox(height: AppSizes.paddingXLarge),
               
               SizedBox(
                 width: double.infinity,
@@ -588,33 +591,35 @@ class _PartnersScreenState extends State<PartnersScreen>
                   style: AppButtonStyles.primaryButton.copyWith(
                     padding: WidgetStateProperty.all(
                       EdgeInsets.symmetric(
-                        vertical: isTablet ? 16 : 12,
+                        vertical: screenWidth > 375 ? 15 : 12,
                       ),
                     ),
                   ),
                   child: Text(
                     'Got it!',
                     style: TextStyle(
-                      fontSize: isTablet ? 18 : 16,
+                      fontSize: screenWidth * 0.04,
                       color: AppColors.darkBlue,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
-              ],
-            ),
+            ],
           ),
         ),
-      );
+      ),
+    );
   }
 
-  Widget _buildStep(String number, String text, String emoji, bool isTablet) {
+  Widget _buildStep(String number, String text, String emoji) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    
     return Row(
       children: [
         Container(
-          width: isTablet ? 40 : 32,
-          height: isTablet ? 40 : 32,
+          width: screenWidth * 0.08,
+          height: screenWidth * 0.08,
           decoration: BoxDecoration(
             color: AppColors.darkBlue,
             shape: BoxShape.circle,
@@ -625,22 +630,22 @@ class _PartnersScreenState extends State<PartnersScreen>
               style: TextStyle(
                 color: AppColors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: isTablet ? 18 : 14,
+                fontSize: screenWidth * 0.035,
               ),
             ),
           ),
         ),
-        SizedBox(width: isTablet ? 16 : 12),
+        SizedBox(width: AppSizes.paddingMedium),
         Text(
           emoji,
-          style: TextStyle(fontSize: isTablet ? 24 : 20),
+          style: TextStyle(fontSize: screenWidth * 0.05),
         ),
-        SizedBox(width: isTablet ? 12 : 8),
+        SizedBox(width: AppSizes.paddingSmall),
         Expanded(
           child: Text(
             text,
             style: AppTextStyles.bodyText.copyWith(
-              fontSize: isTablet ? 18 : 16,
+              fontSize: screenWidth * 0.04,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -650,20 +655,19 @@ class _PartnersScreenState extends State<PartnersScreen>
   }
 
   Widget _buildHeader() {
-    final screenSize = MediaQuery.of(context).size;
-    final isTablet = screenSize.shortestSide >= 600;
-    final safeAreaTop = MediaQuery.of(context).padding.top;
+    final screenWidth = MediaQuery.of(context).size.width;
     
     return FadeTransition(
       opacity: _fadeAnimation,
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: Container(
-          margin: EdgeInsets.only(top: safeAreaTop > 0 ? 0 : 10),
-          padding: EdgeInsets.all(isTablet ? 24 : 20),
+          padding: EdgeInsets.all(
+            screenWidth > 375 ? AppSizes.paddingXLarge : AppSizes.paddingLarge,
+          ),
           decoration: BoxDecoration(
             color: AppColors.white,
-            borderRadius: BorderRadius.circular(isTablet ? 30 : 25),
+            borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
@@ -678,11 +682,9 @@ class _PartnersScreenState extends State<PartnersScreen>
                 children: [
                   // Back button
                   Container(
-                    width: isTablet ? 50 : 44,
-                    height: isTablet ? 50 : 44,
                     decoration: BoxDecoration(
                       color: AppColors.grey.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(isTablet ? 15 : 12),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
                     ),
                     child: IconButton(
                       onPressed: () {
@@ -692,12 +694,12 @@ class _PartnersScreenState extends State<PartnersScreen>
                       icon: Icon(
                         Icons.arrow_back_ios,
                         color: AppColors.grey,
-                        size: isTablet ? 24 : 20,
+                        size: screenWidth * 0.06,
                       ),
                     ),
                   ),
                   
-                  SizedBox(width: isTablet ? 16 : 12),
+                  SizedBox(width: screenWidth * 0.04),
                   
                   // Partners icon with glow effect
                   AnimatedBuilder(
@@ -706,8 +708,14 @@ class _PartnersScreenState extends State<PartnersScreen>
                       return Transform.translate(
                         offset: Offset(0, 3 * _floatAnimation.value),
                         child: Container(
-                          width: isTablet ? 70 : 60,
-                          height: isTablet ? 70 : 60,
+                          width: screenWidth * 0.15,
+                          height: screenWidth * 0.15,
+                          constraints: const BoxConstraints(
+                            minWidth: 60,
+                            maxWidth: 80,
+                            minHeight: 60,
+                            maxHeight: 80,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.green,
                             shape: BoxShape.circle,
@@ -727,7 +735,7 @@ class _PartnersScreenState extends State<PartnersScreen>
                             child: Text(
                               '🤝',
                               style: TextStyle(
-                                fontSize: isTablet ? 35 : 30,
+                                fontSize: screenWidth * 0.08,
                               ),
                             ),
                           ),
@@ -736,7 +744,7 @@ class _PartnersScreenState extends State<PartnersScreen>
                     },
                   ),
                   
-                  SizedBox(width: isTablet ? 16 : 12),
+                  SizedBox(width: screenWidth * 0.04),
                   
                   // Title and description
                   Expanded(
@@ -746,16 +754,16 @@ class _PartnersScreenState extends State<PartnersScreen>
                         Text(
                           'Our Partners 🤝',
                           style: AppTextStyles.sectionTitle.copyWith(
-                            fontSize: isTablet ? 24 : 20,
+                            fontSize: screenWidth * 0.05,
                           ),
                         ),
                         
-                        SizedBox(height: 4),
+                        SizedBox(height: screenWidth * 0.01),
                         
                         Text(
                           'Places where you can use certificates',
                           style: AppTextStyles.bodyText.copyWith(
-                            fontSize: isTablet ? 16 : 14,
+                            fontSize: screenWidth * 0.04,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -765,11 +773,11 @@ class _PartnersScreenState extends State<PartnersScreen>
                 ],
               ),
               
-              SizedBox(height: isTablet ? 20 : 16),
+              SizedBox(height: AppSizes.paddingLarge),
               
               // Info card
               Container(
-                padding: EdgeInsets.all(isTablet ? 16 : 12),
+                padding: EdgeInsets.all(AppSizes.paddingMedium),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -777,7 +785,7 @@ class _PartnersScreenState extends State<PartnersScreen>
                       AppColors.green.withOpacity(0.1),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(isTablet ? 20 : 15),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
                   border: Border.all(
                     color: AppColors.yellow.withOpacity(0.3),
                     width: 2,
@@ -785,8 +793,8 @@ class _PartnersScreenState extends State<PartnersScreen>
                 ),
                 child: Row(
                   children: [
-                    Text('🎁', style: TextStyle(fontSize: isTablet ? 32 : 28)),
-                    SizedBox(width: isTablet ? 16 : 12),
+                    Text('🎁', style: TextStyle(fontSize: screenWidth * 0.08)),
+                    SizedBox(width: AppSizes.paddingMedium),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -794,14 +802,14 @@ class _PartnersScreenState extends State<PartnersScreen>
                           Text(
                             'Free certificates!',
                             style: AppTextStyles.cardTitle.copyWith(
-                              fontSize: isTablet ? 18 : 16,
+                              fontSize: screenWidth * 0.04,
                               color: AppColors.darkBlue,
                             ),
                           ),
                           Text(
                             'Complete quizzes to earn visits to amazing places',
                             style: AppTextStyles.bodyText.copyWith(
-                              fontSize: isTablet ? 16 : 14,
+                              fontSize: screenWidth * 0.035,
                               color: AppColors.grey,
                             ),
                           ),
@@ -819,18 +827,16 @@ class _PartnersScreenState extends State<PartnersScreen>
   }
 
   Widget _buildCategoryFilter() {
-    final screenSize = MediaQuery.of(context).size;
-    final isTablet = screenSize.shortestSide >= 600;
+    final screenWidth = MediaQuery.of(context).size.width;
     
     return FadeTransition(
       opacity: _fadeAnimation,
       child: Container(
-        height: isTablet ? 60 : 50,
-        margin: EdgeInsets.symmetric(vertical: isTablet ? 16 : 12),
+        height: screenWidth * 0.12,
+        margin: EdgeInsets.symmetric(vertical: AppSizes.paddingMedium),
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: isTablet ? 24 : 20),
           itemCount: _categories.length,
           itemBuilder: (context, index) {
             final category = _categories[index];
@@ -838,23 +844,22 @@ class _PartnersScreenState extends State<PartnersScreen>
             
             return AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              margin: EdgeInsets.only(right: isTablet ? 12 : 8),
+              margin: EdgeInsets.only(right: AppSizes.paddingSmall),
               child: GestureDetector(
                 onTap: () {
                   HapticFeedback.selectionClick();
                   setState(() {
                     _selectedCategory = category;
-                    _currentPartnerIndex = 0;
                   });
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(
-                    horizontal: isTablet ? 20 : 16,
-                    vertical: isTablet ? 12 : 10,
+                    horizontal: screenWidth * 0.04,
+                    vertical: screenWidth * 0.02,
                   ),
                   decoration: BoxDecoration(
                     color: isSelected ? AppColors.yellow : AppColors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(isTablet ? 25 : 20),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
                     border: Border.all(
                       color: isSelected ? AppColors.green : AppColors.white.withOpacity(0.3),
                       width: 2,
@@ -873,7 +878,7 @@ class _PartnersScreenState extends State<PartnersScreen>
                       style: TextStyle(
                         color: isSelected ? AppColors.darkBlue : AppColors.white,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                        fontSize: isTablet ? 16 : 14,
+                        fontSize: screenWidth * 0.035,
                       ),
                     ),
                   ),
@@ -886,493 +891,270 @@ class _PartnersScreenState extends State<PartnersScreen>
     );
   }
 
-  Widget _build3DPartnersScroll() {
-    final screenSize = MediaQuery.of(context).size;
-    final isTablet = screenSize.shortestSide >= 600;
-    final filteredPartners = _filteredPartners;
+  Widget _buildPartnerCard(PartnerData partner, int index) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     
-    if (filteredPartners.isEmpty) {
-      return _buildEmptyState();
-    }
-    
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: Container(
-        height: isTablet ? 420 : 360,
-        child: PageView.builder(
-          controller: _pageController,
-          physics: const BouncingScrollPhysics(),
-          onPageChanged: (index) {
-            setState(() {
-              _currentPartnerIndex = index;
-            });
-            HapticFeedback.selectionClick();
-          },
-          itemCount: filteredPartners.length,
-          itemBuilder: (context, index) {
-            return AnimatedBuilder(
-              animation: _pageController,
-              builder: (context, child) {
-                double value = 1.0;
-                if (_pageController.position.haveDimensions) {
-                  value = _pageController.page! - index;
-                  value = (1 - (value.abs() * 0.3)).clamp(0.0, 1.0);
-                }
-                
-                return Center(
-                  child: SizedBox(
-                    height: Curves.easeOut.transform(value) * (isTablet ? 420 : 360),
-                    child: Transform.scale(
-                      scale: Curves.easeOut.transform(value),
-                      child: Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.identity()
-                          ..setEntry(3, 2, 0.001)
-                          ..rotateY((1 - value) * 0.3),
-                        child: _build3DPartnerCard(filteredPartners[index], index, value),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _build3DPartnerCard(PartnerData partner, int index, double animValue) {
-    final screenSize = MediaQuery.of(context).size;
-    final isTablet = screenSize.shortestSide >= 600;
-    final isActive = index == _currentPartnerIndex;
-    
-    return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: isTablet ? 16 : 12,
-        vertical: isTablet ? 20 : 16,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => _onPartnerTap(partner),
-          borderRadius: BorderRadius.circular(isTablet ? 30 : 25),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            padding: EdgeInsets.all(isTablet ? 24 : 20),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(isTablet ? 30 : 25),
-              border: Border.all(
-                color: isActive 
-                    ? partner.gradient[0] 
-                    : partner.gradient[0].withOpacity(0.2),
-                width: isActive ? 3 : 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: partner.gradient[0].withOpacity(isActive ? 0.3 : 0.15),
-                  blurRadius: isActive ? 30 : 20,
-                  offset: Offset(0, isActive ? 15 : 8),
-                  spreadRadius: isActive ? 3 : 1,
+    return SlideTransition(
+      position: _slideAnimation,
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: AnimatedBuilder(
+          animation: _bounceAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: 0.8 + (0.2 * _bounceAnimation.value),
+              child: Container(
+                margin: EdgeInsets.only(
+                  bottom: isLandscape ? AppSizes.paddingMedium : AppSizes.paddingLarge,
                 ),
-              ],
-            ),
-            child: Column(
-              children: [
-                // Top section with icon and info
-                Row(
-                  children: [
-                    // 3D Icon container
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      width: isTablet ? 80 : 70,
-                      height: isTablet ? 80 : 70,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _onPartnerTap(partner),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: EdgeInsets.all(
+                        screenWidth > 375 ? AppSizes.paddingXLarge : AppSizes.paddingLarge,
+                      ),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: partner.gradient,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
+                        border: Border.all(
+                          color: partner.gradient[0].withOpacity(0.2),
+                          width: 2,
                         ),
-                        borderRadius: BorderRadius.circular(isTablet ? 20 : 18),
                         boxShadow: [
                           BoxShadow(
-                            color: partner.gradient[0].withOpacity(0.4),
-                            blurRadius: isActive ? 15 : 10,
-                            offset: const Offset(0, 5),
+                            color: partner.gradient[0].withOpacity(0.15),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
                           ),
                         ],
                       ),
-                      child: Transform.scale(
-                        scale: isActive ? 1.1 : 1.0,
-                        child: Center(
-                          child: Text(
-                            partner.icon,
-                            style: TextStyle(fontSize: isTablet ? 40 : 35),
-                          ),
-                        ),
-                      ),
-                    ),
-                    
-                    SizedBox(width: isTablet ? 16 : 12),
-                    
-                    // Partner info
-                    Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                              Expanded(
-                                child: Text(
-                                  partner.name,
-                                  style: AppTextStyles.cardTitle.copyWith(
-                                    fontSize: isTablet ? 20 : 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: isActive ? partner.gradient[0] : AppColors.darkBlue,
-                                  ),
+                              // Icon container with gradient
+                              Container(
+                                width: screenWidth * 0.15,
+                                height: screenWidth * 0.15,
+                                constraints: const BoxConstraints(
+                                  minWidth: 60,
+                                  maxWidth: 80,
+                                  minHeight: 60,
+                                  maxHeight: 80,
                                 ),
-                              ),
-                              if (partner.isPopular) ...[
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 300),
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: isTablet ? 10 : 8,
-                                    vertical: isTablet ? 4 : 3,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: partner.gradient,
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
                                   ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.yellow,
-                                    borderRadius: BorderRadius.circular(isTablet ? 12 : 10),
-                                    boxShadow: isActive ? [
-                                      BoxShadow(
-                                        color: AppColors.yellow.withOpacity(0.5),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ] : [],
-                                  ),
-                                  child: Text(
-                                    'Popular',
-                                    style: TextStyle(
-                                      color: AppColors.darkBlue,
-                                      fontSize: isTablet ? 12 : 10,
-                                      fontWeight: FontWeight.bold,
+                                  borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: partner.gradient[0].withOpacity(0.3),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
                                     ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    partner.icon,
+                                    style: TextStyle(fontSize: screenWidth * 0.08),
                                   ),
                                 ),
-                              ],
+                              ),
+                              
+                              SizedBox(width: screenWidth * 0.04),
+                              
+                              // Partner info
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            partner.name,
+                                            style: AppTextStyles.cardTitle.copyWith(
+                                              fontSize: screenWidth * 0.045,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        if (partner.isPopular) ...[
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: AppSizes.paddingSmall,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.yellow,
+                                              borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
+                                            ),
+                                            child: Text(
+                                              'Popular',
+                                              style: TextStyle(
+                                                color: AppColors.darkBlue,
+                                                fontSize: screenWidth * 0.03,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                    
+                                    SizedBox(height: screenWidth * 0.01),
+                                    
+                                    Text(
+                                      partner.type,
+                                      style: AppTextStyles.bodyText.copyWith(
+                                        fontSize: screenWidth * 0.04,
+                                        color: partner.gradient[0],
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    
+                                    SizedBox(height: screenWidth * 0.02),
+                                    
+                                    // Rating
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.star,
+                                          color: AppColors.yellow,
+                                          size: screenWidth * 0.04,
+                                        ),
+                                        SizedBox(width: 2),
+                                        Text(
+                                          partner.rating.toString(),
+                                          style: AppTextStyles.bodyText.copyWith(
+                                            fontSize: screenWidth * 0.035,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(width: AppSizes.paddingSmall),
+                                        Expanded(
+                                          child: Text(
+                                            '${partner.benefits.length} benefits',
+                                            style: AppTextStyles.bodyText.copyWith(
+                                              fontSize: screenWidth * 0.035,
+                                              color: AppColors.grey.withOpacity(0.7),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              
+                              // Arrow icon
+                              Container(
+                                padding: EdgeInsets.all(screenWidth * 0.02),
+                                decoration: BoxDecoration(
+                                  color: partner.gradient[0].withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
+                                ),
+                                child: Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: partner.gradient[0],
+                                  size: screenWidth * 0.05,
+                                ),
+                              ),
                             ],
                           ),
                           
-                          SizedBox(height: isTablet ? 8 : 6),
+                          SizedBox(height: AppSizes.paddingMedium),
                           
+                          // Description
                           Text(
-                            partner.type,
+                            partner.description,
                             style: AppTextStyles.bodyText.copyWith(
-                              fontSize: isTablet ? 16 : 14,
-                              color: partner.gradient[0],
-                              fontWeight: FontWeight.w600,
+                              fontSize: screenWidth * 0.04,
+                              color: AppColors.grey.withOpacity(0.8),
+                              height: 1.4,
                             ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           
-                          SizedBox(height: isTablet ? 8 : 6),
+                          SizedBox(height: AppSizes.paddingMedium),
                           
-                          // Rating with animated stars
-                          Row(
-                            children: [
-                              ...List.generate(5, (starIndex) {
-                                final filled = starIndex < partner.rating.floor();
-                                return AnimatedContainer(
-                                  duration: Duration(milliseconds: 300 + (starIndex * 100)),
-                                  margin: EdgeInsets.only(right: 2),
-                                  child: Icon(
-                                    filled ? Icons.star : Icons.star_border,
-                                    color: AppColors.yellow,
-                                    size: isTablet ? 18 : 16,
-                                  ),
-                                );
-                              }),
-                              SizedBox(width: isTablet ? 8 : 6),
-                              Text(
-                                partner.rating.toString(),
-                                style: AppTextStyles.bodyText.copyWith(
-                                  fontSize: isTablet ? 14 : 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                
-                SizedBox(height: isTablet ? 20 : 16),
-                
-                // Description with animated text
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  height: isTablet ? 60 : 50,
-                  child: Text(
-                    partner.description,
-                    style: AppTextStyles.bodyText.copyWith(
-                      fontSize: isTablet ? 16 : 14,
-                      color: AppColors.grey.withOpacity(isActive ? 1.0 : 0.8),
-                      height: 1.4,
-                    ),
-                    maxLines: isTablet ? 3 : 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                
-                SizedBox(height: isTablet ? 16 : 12),
-                
-                // Benefits section with 3D effect
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  padding: EdgeInsets.all(isTablet ? 16 : 12),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        partner.gradient[0].withOpacity(isActive ? 0.1 : 0.05),
-                        partner.gradient[1].withOpacity(isActive ? 0.1 : 0.05),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(isTablet ? 20 : 15),
-                    border: Border.all(
-                      color: partner.gradient[0].withOpacity(isActive ? 0.3 : 0.2),
-                      width: isActive ? 2 : 1,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            transform: Matrix4.identity()
-                              ..scale(isActive ? 1.2 : 1.0),
-                            child: Icon(
-                              Icons.card_giftcard,
-                              color: partner.gradient[0],
-                              size: isTablet ? 24 : 20,
-                            ),
-                          ),
-                          SizedBox(width: isTablet ? 12 : 8),
-                          Expanded(
-                            child: Text(
-                              'Benefits included',
-                              style: AppTextStyles.cardTitle.copyWith(
-                                fontSize: isTablet ? 16 : 14,
-                                color: partner.gradient[0],
-                              ),
-                            ),
-                          ),
+                          // Benefits preview
                           Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isTablet ? 10 : 8,
-                              vertical: isTablet ? 4 : 3,
-                            ),
+                            padding: EdgeInsets.all(AppSizes.paddingMedium),
                             decoration: BoxDecoration(
-                              color: partner.gradient[0].withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(isTablet ? 12 : 10),
+                              color: partner.gradient[0].withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
                             ),
-                            child: Text(
-                              '${partner.benefits.length}',
-                              style: TextStyle(
-                                color: partner.gradient[0],
-                                fontSize: isTablet ? 14 : 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      
-                      if (isActive) ...[
-                        SizedBox(height: isTablet ? 12 : 8),
-                        ...partner.benefits.take(isTablet ? 3 : 2).map((benefit) => 
-                          Padding(
-                            padding: EdgeInsets.only(bottom: isTablet ? 6 : 4),
                             child: Row(
                               children: [
                                 Icon(
-                                  Icons.check_circle,
-                                  color: AppColors.green,
-                                  size: isTablet ? 16 : 14,
+                                  Icons.card_giftcard,
+                                  color: partner.gradient[0],
+                                  size: screenWidth * 0.05,
                                 ),
-                                SizedBox(width: isTablet ? 8 : 6),
+                                SizedBox(width: AppSizes.paddingSmall),
                                 Expanded(
                                   child: Text(
-                                    benefit,
+                                    partner.benefits.first,
                                     style: AppTextStyles.bodyText.copyWith(
-                                      fontSize: isTablet ? 14 : 12,
+                                      fontSize: screenWidth * 0.035,
+                                      fontWeight: FontWeight.w500,
                                       color: AppColors.darkBlue,
                                     ),
                                   ),
                                 ),
+                                if (partner.benefits.length > 1) ...[
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: AppSizes.paddingSmall,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: partner.gradient[0].withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
+                                    ),
+                                    child: Text(
+                                      '+${partner.benefits.length - 1} more',
+                                      style: TextStyle(
+                                        color: partner.gradient[0],
+                                        fontSize: screenWidth * 0.03,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
                           ),
-                        ).toList(),
-                      ],
-                    ],
-                  ),
-                ),
-                
-                SizedBox(height: isTablet ? 16 : 12),
-                
-                // Action button with 3D effect
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: double.infinity,
-                  height: isTablet ? 50 : 44,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: partner.gradient),
-                    borderRadius: BorderRadius.circular(isTablet ? 20 : 15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: partner.gradient[0].withOpacity(isActive ? 0.4 : 0.2),
-                        blurRadius: isActive ? 15 : 8,
-                        offset: Offset(0, isActive ? 8 : 4),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () => _onPartnerTap(partner),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(isTablet ? 20 : 15),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: AppColors.white,
-                          size: isTablet ? 20 : 18,
-                        ),
-                        SizedBox(width: isTablet ? 8 : 6),
-                        Text(
-                          'View Details',
-                          style: TextStyle(
-                            color: AppColors.white,
-                            fontSize: isTablet ? 16 : 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-      )
-    );
-    
-  }
-
-  Widget _buildEmptyState() {
-    final screenSize = MediaQuery.of(context).size;
-    final isTablet = screenSize.shortestSide >= 600;
-    
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: Container(
-        height: isTablet ? 300 : 250,
-        margin: EdgeInsets.symmetric(horizontal: isTablet ? 24 : 20),
-        padding: EdgeInsets.all(isTablet ? 32 : 24),
-        decoration: BoxDecoration(
-          color: AppColors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(isTablet ? 30 : 25),
-          border: Border.all(
-            color: AppColors.white.withOpacity(0.2),
-            width: 2,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '🔍',
-              style: TextStyle(fontSize: isTablet ? 60 : 50),
-            ),
-            SizedBox(height: isTablet ? 16 : 12),
-            Text(
-              'No partners found',
-              style: AppTextStyles.sectionTitle.copyWith(
-                color: AppColors.white,
-                fontSize: isTablet ? 22 : 20,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: isTablet ? 8 : 6),
-            Text(
-              'Try selecting a different category',
-              style: AppTextStyles.caption.copyWith(
-                fontSize: isTablet ? 16 : 14,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPageIndicator() {
-    final screenSize = MediaQuery.of(context).size;
-    final isTablet = screenSize.shortestSide >= 600;
-    final filteredPartners = _filteredPartners;
-    
-    if (filteredPartners.length <= 1) return const SizedBox.shrink();
-    
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: isTablet ? 16 : 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(filteredPartners.length, (index) {
-            final isActive = index == _currentPartnerIndex;
-            final partner = filteredPartners[index];
-            
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              margin: EdgeInsets.symmetric(horizontal: isTablet ? 4 : 3),
-              width: isActive ? (isTablet ? 32 : 24) : (isTablet ? 12 : 8),
-              height: isTablet ? 12 : 8,
-              decoration: BoxDecoration(
-                color: isActive ? partner.gradient[0] : AppColors.white.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(isTablet ? 6 : 4),
-                boxShadow: isActive ? [
-                  BoxShadow(
-                    color: partner.gradient[0].withOpacity(0.4),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ] : [],
               ),
             );
-          }),
+          },
         ),
       ),
     );
   }
 
   Widget _buildFloatingIcon() {
-    final screenSize = MediaQuery.of(context).size;
-    final isTablet = screenSize.shortestSide >= 600;
+    final screenWidth = MediaQuery.of(context).size.width;
     
     return Positioned(
-      top: screenSize.height * 0.15,
-      right: isTablet ? 30 : 20,
+      top: MediaQuery.of(context).size.height * 0.15,
+      right: screenWidth * 0.05,
       child: AnimatedBuilder(
         animation: _floatAnimation,
         builder: (context, child) {
@@ -1384,7 +1166,7 @@ class _PartnersScreenState extends State<PartnersScreen>
             child: Transform.rotate(
               angle: 0.1 * _floatAnimation.value,
               child: Container(
-                padding: EdgeInsets.all(isTablet ? 16 : 12),
+                padding: EdgeInsets.all(screenWidth * 0.03),
                 decoration: BoxDecoration(
                   gradient: RadialGradient(
                     colors: [
@@ -1397,7 +1179,7 @@ class _PartnersScreenState extends State<PartnersScreen>
                 ),
                 child: Text(
                   '🎯',
-                  style: TextStyle(fontSize: isTablet ? 50 : 40),
+                  style: TextStyle(fontSize: screenWidth * 0.1),
                 ),
               ),
             ),
@@ -1409,10 +1191,11 @@ class _PartnersScreenState extends State<PartnersScreen>
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-    final safeArea = MediaQuery.of(context).padding;
-    final isTablet = screenSize.shortestSide >= 600;
-    final isLandscape = screenSize.width > screenSize.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final safeAreaTop = MediaQuery.of(context).padding.top;
+    final safeAreaBottom = MediaQuery.of(context).padding.bottom;
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     
     return Scaffold(
       backgroundColor: AppColors.darkBlue,
@@ -1436,135 +1219,146 @@ class _PartnersScreenState extends State<PartnersScreen>
             // Main content
             SafeArea(
               child: SingleChildScrollView(
-                controller: _scrollController,
                 physics: const BouncingScrollPhysics(),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    minHeight: screenSize.height - safeArea.top - safeArea.bottom,
+                    minHeight: screenHeight - safeAreaTop - safeAreaBottom,
                   ),
-                  child: Column(
-                    children: [
-                      SizedBox(height: isLandscape && !isTablet ? 8 : 16),
-                      
-                      // Header
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: isTablet ? 24 : 20),
-                        child: _buildHeader(),
-                      ),
-                      
-                      SizedBox(height: isLandscape && !isTablet ? 12 : 20),
-                      
-                      // Category filter
-                      _buildCategoryFilter(),
-                      
-                      SizedBox(height: isTablet ? 16 : 12),
-                      
-                      // Partners count
-                      FadeTransition(
-                        opacity: _fadeAnimation,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: isTablet ? 24 : 20),
+                  child: Padding(
+                    padding: EdgeInsets.all(
+                      isLandscape ? AppSizes.paddingMedium : AppSizes.paddingLarge,
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(height: isLandscape ? AppSizes.paddingSmall : AppSizes.paddingLarge),
+                        
+                        // Header
+                        _buildHeader(),
+                        
+                        SizedBox(height: isLandscape ? AppSizes.paddingMedium : AppSizes.paddingLarge),
+                        
+                        // Category filter
+                        _buildCategoryFilter(),
+                        
+                        SizedBox(height: AppSizes.paddingMedium),
+                        
+                        // Partners count
+                        FadeTransition(
+                          opacity: _fadeAnimation,
                           child: Row(
                             children: [
                               Container(
-                                padding: EdgeInsets.all(isTablet ? 10 : 8),
+                                padding: EdgeInsets.all(screenWidth * 0.02),
                                 decoration: BoxDecoration(
                                   color: AppColors.white.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(isTablet ? 12 : 10),
+                                  borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
                                 ),
                                 child: Icon(
                                   Icons.location_on,
                                   color: AppColors.white,
-                                  size: isTablet ? 20 : 18,
+                                  size: screenWidth * 0.05,
                                 ),
                               ),
-                              SizedBox(width: isTablet ? 12 : 8),
+                              SizedBox(width: AppSizes.paddingSmall),
                               Text(
                                 '${_filteredPartners.length} partners',
                                 style: AppTextStyles.bodyTextWhite.copyWith(
-                                  fontSize: isTablet ? 18 : 16,
+                                  fontSize: screenWidth * 0.04,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(width: isTablet ? 8 : 6),
+                              SizedBox(width: AppSizes.paddingSmall),
                               if (_selectedCategory != 'All') ...[
                                 Text(
                                   'in $_selectedCategory',
                                   style: AppTextStyles.caption.copyWith(
-                                    fontSize: isTablet ? 16 : 14,
+                                    fontSize: screenWidth * 0.035,
                                   ),
                                 ),
                               ],
                             ],
                           ),
                         ),
-                      ),
-                      
-                      SizedBox(height: isTablet ? 24 : 20),
-                      
-                      // 3D Partners scroll
-                      _build3DPartnersScroll(),
-                      
-                      // Page indicator
-                      _buildPageIndicator(),
-                      
-                      SizedBox(height: isTablet ? 20 : 16),
-                      
-                      // Footer
-                      FadeTransition(
-                        opacity: _fadeAnimation,
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: isTablet ? 24 : 20),
-                          padding: EdgeInsets.all(isTablet ? 20 : 16),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                AppColors.white.withOpacity(0.1),
-                                AppColors.white.withOpacity(0.05),
+                        
+                        SizedBox(height: AppSizes.paddingLarge),
+                        
+                        // Partners list
+                        ...List.generate(_filteredPartners.length, (index) {
+                          return AnimatedBuilder(
+                            animation: _bounceController,
+                            builder: (context, child) {
+                              // Stagger the animations
+                              final delay = index * 0.1;
+                              final adjustedValue = (_bounceAnimation.value - delay).clamp(0.0, 1.0);
+                              
+                              return Transform.scale(
+                                scale: 0.8 + (0.2 * adjustedValue),
+                                child: Opacity(
+                                  opacity: adjustedValue,
+                                  child: _buildPartnerCard(_filteredPartners[index], index),
+                                ),
+                              );
+                            },
+                          );
+                        }),
+                        
+                        SizedBox(height: isLandscape ? AppSizes.paddingMedium : AppSizes.paddingLarge),
+                        
+                        // Footer
+                        FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: Container(
+                            padding: EdgeInsets.all(AppSizes.paddingLarge),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppColors.white.withOpacity(0.1),
+                                  AppColors.white.withOpacity(0.05),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+                              border: Border.all(
+                                color: AppColors.white.withOpacity(0.2),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  '🎪',
+                                  style: TextStyle(fontSize: screenWidth * 0.08),
+                                ),
+                                SizedBox(width: AppSizes.paddingMedium),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Discover amazing places',
+                                        style: AppTextStyles.bodyTextWhite.copyWith(
+                                          fontSize: screenWidth * 0.04,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(height: screenWidth * 0.01),
+                                      Text(
+                                        'Complete quizzes and earn free visits to our partner locations!',
+                                        style: AppTextStyles.caption.copyWith(
+                                          fontSize: screenWidth * 0.035,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
-                            borderRadius: BorderRadius.circular(isTablet ? 25 : 20),
-                            border: Border.all(
-                              color: AppColors.white.withOpacity(0.2),
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Text(
-                                '🎪',
-                                style: TextStyle(fontSize: isTablet ? 40 : 32),
-                              ),
-                              SizedBox(width: isTablet ? 16 : 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Discover amazing places',
-                                      style: AppTextStyles.bodyTextWhite.copyWith(
-                                        fontSize: isTablet ? 18 : 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: isTablet ? 6 : 4),
-                                    Text(
-                                      'Complete quizzes and earn free visits to our partner locations!',
-                                      style: AppTextStyles.caption.copyWith(
-                                        fontSize: isTablet ? 16 : 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
                           ),
                         ),
-                      ),
-                      
-                      // Bottom safe area padding
-                      SizedBox(height: math.max(safeArea.bottom, isTablet ? 24 : 20)),
-                    ],
+                        
+                        // Bottom safe area padding
+                        SizedBox(height: safeAreaBottom > 0 ? safeAreaBottom : AppSizes.paddingLarge),
+                      ],
+                    ),
                   ),
                 ),
               ),

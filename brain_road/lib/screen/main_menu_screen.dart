@@ -476,7 +476,13 @@ class _MainMenuScreenState extends State<MainMenuScreen>
     // Navigate to the appropriate screen
     if (item.route == '/partners') {
       Navigator.of(context).pushNamed('/partners');
-    } else {
+    }
+    else if (item.route == '/quizzes') {
+      Navigator.of(context).pushNamed('/quizzes');
+    } else if (item.route == '/certificates') {
+      Navigator.of(context).pushNamed('/certificates');
+    } 
+    else {
       // Show coming soon dialog for other routes
       _showComingSoonDialog(item);
     }

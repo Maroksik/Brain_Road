@@ -277,6 +277,8 @@ class AppButtonStyles {
       vertical: AppSizes.paddingSmall,
     ),
   );
+
+  static var secondaryButton;
 }
 
 /// Клас з анімаціями

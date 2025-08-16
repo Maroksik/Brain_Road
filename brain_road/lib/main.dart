@@ -1,11 +1,12 @@
+import 'package:brain_road/screen/partners_screen.dart';
+import 'package:brain_road/screen/registration_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'screen/welcome_screen.dart';
-import 'screen/registration_screen.dart';
 import 'screen/main_menu_screen.dart';
 import 'style/app_styles.dart';
 import 'services/user_preferences.dart';
-import 'screen/partners_screen.dart';
+
 
 void main() async {
   // Забезпечуємо ініціалізацію Flutter widgets

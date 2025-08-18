@@ -263,7 +263,7 @@ class _RewardsScreenState extends State<RewardsScreen>
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: isActivated 
-                        ? [Colors.grey[300]!, Colors.grey[400]!]
+                        ? [AppColors.lightGrey, AppColors.grey]
                         : reward.gradient,
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -272,7 +272,7 @@ class _RewardsScreenState extends State<RewardsScreen>
                     boxShadow: [
                       BoxShadow(
                         color: isActivated 
-                          ? Colors.grey.withOpacity(0.2)
+                          ? AppColors.grey.withOpacity(0.2)
                           : reward.gradient[0].withOpacity(0.3),
                         blurRadius: 15,
                         offset: const Offset(0, 8),
@@ -304,8 +304,8 @@ class _RewardsScreenState extends State<RewardsScreen>
                                         style: TextStyle(
                                           fontSize: screenWidth * 0.12,
                                           color: isActivated 
-                                            ? Colors.grey[600]
-                                            : null,
+                                            ? AppColors.grey
+                                            : AppColors.yellow,
                                         ),
                                       ),
                                     );
@@ -320,8 +320,8 @@ class _RewardsScreenState extends State<RewardsScreen>
                                   ),
                                   decoration: BoxDecoration(
                                     color: isActivated 
-                                      ? Colors.green.withOpacity(0.2)
-                                      : Colors.white.withOpacity(0.2),
+                                      ? AppColors.green.withOpacity(0.2)
+                                      : AppColors.yellow.withOpacity(0.2),
                                     borderRadius: BorderRadius.circular(15),
                                   ),
                                   child: Row(
@@ -333,16 +333,16 @@ class _RewardsScreenState extends State<RewardsScreen>
                                           : Icons.card_giftcard,
                                         size: 16,
                                         color: isActivated 
-                                          ? Colors.green[700]
-                                          : Colors.white,
+                                          ? AppColors.green
+                                          : AppColors.yellow,
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
                                         isActivated ? 'Used' : 'Ready',
                                         style: TextStyle(
                                           color: isActivated 
-                                            ? Colors.green[700]
-                                            : Colors.white,
+                                            ? AppColors.green
+                                            : AppColors.yellow,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 12,
                                         ),
@@ -360,8 +360,8 @@ class _RewardsScreenState extends State<RewardsScreen>
                               reward.title,
                               style: AppTextStyles.cardTitle.copyWith(
                                 color: isActivated 
-                                  ? Colors.grey[700]
-                                  : Colors.white,
+                                  ? AppColors.grey
+                                  : AppColors.white,
                                 fontSize: screenWidth * 0.05,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -376,8 +376,8 @@ class _RewardsScreenState extends State<RewardsScreen>
                               reward.partner,
                               style: AppTextStyles.bodyText.copyWith(
                                 color: isActivated 
-                                  ? Colors.grey[600]
-                                  : Colors.white.withOpacity(0.9),
+                                  ? AppColors.grey
+                                  : AppColors.white.withOpacity(0.9),
                                 fontSize: screenWidth * 0.035,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -390,8 +390,8 @@ class _RewardsScreenState extends State<RewardsScreen>
                               reward.description,
                               style: AppTextStyles.bodyText.copyWith(
                                 color: isActivated 
-                                  ? Colors.grey[600]
-                                  : Colors.white.withOpacity(0.8),
+                                  ? AppColors.grey
+                                  : AppColors.white.withOpacity(0.8),
                                 fontSize: screenWidth * 0.032,
                                 height: 1.3,
                               ),
@@ -412,11 +412,11 @@ class _RewardsScreenState extends State<RewardsScreen>
                     right: 12,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.yellow,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: AppColors.yellow.withOpacity(0.1),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -426,7 +426,7 @@ class _RewardsScreenState extends State<RewardsScreen>
                         onPressed: () => _activateReward(reward),
                         icon: Icon(
                           Icons.touch_app,
-                          color: reward.gradient[0],
+                          color: AppColors.darkBlue,
                           size: 24,
                         ),
                         tooltip: 'Tap to activate',
@@ -453,48 +453,32 @@ class _RewardsScreenState extends State<RewardsScreen>
                 offset: Offset(0, 10 * _floatAnimation.value),
                 child: Text(
                   '🎁',
-                  style: TextStyle(fontSize: screenWidth * 0.2),
+                  style: TextStyle(fontSize: screenWidth * 0.2, color: AppColors.yellow),
                 ),
               );
             },
           ),
-          
           SizedBox(height: screenWidth * 0.05),
-          
           Text(
             'No Rewards Yet',
             style: AppTextStyles.cardTitle.copyWith(
               fontSize: screenWidth * 0.06,
-              color: AppColors.grey,
+              color: AppColors.yellow,
             ),
           ),
-          
           SizedBox(height: screenWidth * 0.02),
-          
           Text(
             'Complete quizzes and earn certificates\nto unlock amazing rewards!',
             style: AppTextStyles.bodyText.copyWith(
               fontSize: screenWidth * 0.04,
-              color: AppColors.grey.withOpacity(0.7),
+              color: AppColors.white.withOpacity(0.7),
             ),
             textAlign: TextAlign.center,
           ),
-          
           SizedBox(height: screenWidth * 0.08),
-          
           ElevatedButton(
             onPressed: () => Navigator.pushNamed(context, '/quizzes'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.darkBlue,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(
-                horizontal: screenWidth * 0.08,
-                vertical: screenWidth * 0.04,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25),
-              ),
-            ),
+            style: AppButtonStyles.primaryButton,
             child: Text(
               'Start Learning',
               style: TextStyle(
@@ -513,9 +497,9 @@ class _RewardsScreenState extends State<RewardsScreen>
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final safeArea = MediaQuery.of(context).padding;
-    
+
     return Scaffold(
-      backgroundColor: AppColors.lightGrey,
+      backgroundColor: AppColors.darkBlue,
       body: SafeArea(
         child: Column(
           children: [
@@ -526,10 +510,17 @@ class _RewardsScreenState extends State<RewardsScreen>
                 vertical: screenWidth * 0.02,
               ),
               decoration: BoxDecoration(
-                color: Colors.white,
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.darkBlue,
+                    AppColors.lightBlue,
+                  ],
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: AppColors.darkBlue.withOpacity(0.15),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -540,7 +531,7 @@ class _RewardsScreenState extends State<RewardsScreen>
                   // Кнопка назад
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.grey.withOpacity(0.1),
+                      color: AppColors.lightBlue.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: IconButton(
@@ -550,14 +541,12 @@ class _RewardsScreenState extends State<RewardsScreen>
                       },
                       icon: Icon(
                         Icons.arrow_back_ios,
-                        color: AppColors.grey,
+                        color: AppColors.yellow,
                         size: screenWidth * 0.06,
                       ),
                     ),
                   ),
-                  
                   SizedBox(width: screenWidth * 0.04),
-                  
                   // Іконка та заголовок
                   Expanded(
                     child: Row(
@@ -565,9 +554,7 @@ class _RewardsScreenState extends State<RewardsScreen>
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFE91E63), Color(0xFFF48FB1)],
-                            ),
+                            gradient: AppTheme.yellowGradient,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -575,9 +562,7 @@ class _RewardsScreenState extends State<RewardsScreen>
                             style: TextStyle(fontSize: screenWidth * 0.06),
                           ),
                         ),
-                        
                         SizedBox(width: screenWidth * 0.03),
-                        
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -586,6 +571,7 @@ class _RewardsScreenState extends State<RewardsScreen>
                               style: AppTextStyles.cardTitle.copyWith(
                                 fontSize: screenWidth * 0.05,
                                 fontWeight: FontWeight.bold,
+                                color: AppColors.yellow,
                               ),
                             ),
                             FutureBuilder<List<RewardData>>(
@@ -599,7 +585,7 @@ class _RewardsScreenState extends State<RewardsScreen>
                                   '$unclaimedCount available',
                                   style: AppTextStyles.bodyText.copyWith(
                                     fontSize: screenWidth * 0.035,
-                                    color: AppColors.grey.withOpacity(0.7),
+                                    color: AppColors.white.withOpacity(0.7),
                                   ),
                                 );
                               },
@@ -609,18 +595,17 @@ class _RewardsScreenState extends State<RewardsScreen>
                       ],
                     ),
                   ),
-                  
                   // Кнопка оновлення
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.grey.withOpacity(0.1),
+                      color: AppColors.lightBlue.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: IconButton(
                       onPressed: _refreshRewards,
                       icon: Icon(
                         Icons.refresh,
-                        color: AppColors.grey,
+                        color: AppColors.yellow,
                         size: screenWidth * 0.06,
                       ),
                     ),
@@ -628,7 +613,6 @@ class _RewardsScreenState extends State<RewardsScreen>
                 ],
               ),
             ),
-            
             // Контент
             Expanded(
               child: FutureBuilder<List<RewardData>>(
@@ -641,21 +625,20 @@ class _RewardsScreenState extends State<RewardsScreen>
                         children: [
                           CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.darkBlue,
+                              AppColors.yellow,
                             ),
                           ),
                           SizedBox(height: screenWidth * 0.04),
                           Text(
                             'Loading your rewards...',
                             style: AppTextStyles.bodyText.copyWith(
-                              color: AppColors.grey,
+                              color: AppColors.white.withOpacity(0.7),
                             ),
                           ),
                         ],
                       ),
                     );
                   }
-                  
                   if (snapshot.hasError) {
                     return Center(
                       child: Column(
@@ -664,40 +647,37 @@ class _RewardsScreenState extends State<RewardsScreen>
                           Icon(
                             Icons.error_outline,
                             size: screenWidth * 0.15,
-                            color: Colors.red.withOpacity(0.7),
+                            color: AppColors.error.withOpacity(0.7),
                           ),
                           SizedBox(height: screenWidth * 0.04),
                           Text(
                             'Error loading rewards',
                             style: AppTextStyles.cardTitle.copyWith(
-                              color: Colors.red.withOpacity(0.7),
+                              color: AppColors.error.withOpacity(0.7),
                             ),
                           ),
                           SizedBox(height: screenWidth * 0.02),
                           ElevatedButton(
                             onPressed: _refreshRewards,
+                            style: AppButtonStyles.primaryButton,
                             child: const Text('Try Again'),
                           ),
                         ],
                       ),
                     );
                   }
-                  
                   final rewards = snapshot.data ?? [];
-                  
                   if (rewards.isEmpty) {
                     return _buildEmptyState(screenWidth);
                   }
-                  
                   // Сортуємо: неактивовані спершу
                   rewards.sort((a, b) {
                     if (a.claimed == b.claimed) return 0;
                     return a.claimed ? 1 : -1;
                   });
-                  
                   return RefreshIndicator(
                     onRefresh: _refreshRewards,
-                    color: AppColors.darkBlue,
+                    color: AppColors.yellow,
                     child: ListView.builder(
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.symmetric(
@@ -707,7 +687,7 @@ class _RewardsScreenState extends State<RewardsScreen>
                       itemBuilder: (context, index) {
                         return _buildGiftCard(rewards[index], screenWidth);
                       },
-                    ),
+                    )
                   );
                 },
               ),

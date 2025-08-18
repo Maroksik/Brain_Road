@@ -10,14 +10,14 @@ class RewardsConstants {
     'Logic & Patterns': [
       RewardTemplate(
         title: 'Free Ice Cream Cone',
-        partner: 'Sweet Dreams Gelato',
+        partner: 'Cinema Plus',
         description: 'Enjoy a delicious scoop of premium gelato',
         emoji: '🍦',
         gradient: [const Color(0xFFFFD54F), const Color(0xFFFFE082)],
       ),
       RewardTemplate(
         title: 'Brain Game Session',
-        partner: 'Logic Games Café',
+        partner: 'TechnoLab',
         description: 'Free 30-minute brain training session',
         emoji: '🧩',
         gradient: [const Color(0xFF42A5F5), const Color(0xFF64B5F6)],
@@ -27,14 +27,14 @@ class RewardsConstants {
     'Math Basics': [
       RewardTemplate(
         title: '1 Hour Gaming Zone',
-        partner: 'GameHub Arena',
+        partner: 'GameMaster Arena',
         description: 'Free hour in our premium gaming zone',
         emoji: '🎮',
         gradient: [const Color(0xFF66BB6A), const Color(0xFF81C784)],
       ),
       RewardTemplate(
         title: 'Math Kit Discount',
-        partner: 'STEM Store',
+        partner: 'KidsLearn Academy',
         description: '25% off on educational math kits',
         emoji: '🔢',
         gradient: [const Color(0xFF9C27B0), const Color(0xFFCE93D8)],
@@ -43,15 +43,15 @@ class RewardsConstants {
     
     'Memory Games': [
       RewardTemplate(
-        title: 'Free Coffee & Pastry',
-        partner: 'Café Central',
+        title: 'Free Pastry',
+        partner: 'AquaWorld',
         description: 'Complimentary coffee and fresh pastry',
         emoji: '☕',
         gradient: [const Color(0xFFFF8A65), const Color(0xFFFFAB91)],
       ),
       RewardTemplate(
         title: 'Memory Cards Set',
-        partner: 'Brain Boost Shop',
+        partner: 'FunZone Arcade',
         description: 'Premium memory training card set',
         emoji: '🃏',
         gradient: [const Color(0xFFFFB74D), const Color(0xFFFFCC02)],

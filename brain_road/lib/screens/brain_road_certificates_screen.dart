@@ -1,8 +1,5 @@
 import 'dart:convert';
 import 'package:brain_road/services/brain_road_quiz_service.dart';
-
-// import '../models/brain_road_certificate.dart';
-import 'package:brain_road/services/brain_road_quiz_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1477,4 +1474,3 @@ void _showCertificateDialog(String courseName, bool hasReward) {
     return AppColors.grey;
   }
 }
-// Remove local BrainRoadCertificate model, use the one from brain_road_quiz_service.dart }

@@ -122,11 +122,13 @@ class BrainRoadQuizService {
   static Future<void> _generateCertificate(String quizId, int score, int totalQuestions) async {
     final prefs = await SharedPreferences.getInstance();
     final certificates = await getCertificates();
-    
+
+    final category = _getCategoryByQuizId(quizId);
+
     final certificate = BrainRoadCertificate(
       id: 'cert_${quizId}_${DateTime.now().millisecondsSinceEpoch}',
       quizId: quizId,
-      category: _getCategoryByQuizId(quizId),
+      category: category,
       score: score,
       totalQuestions: totalQuestions,
       percentage: (score / totalQuestions * 100).round(),
@@ -136,9 +138,12 @@ class BrainRoadQuizService {
       childAvatar: prefs.getString('user_avatar') ?? '🧠',
       childAge: prefs.getString('user_age') ?? '',
     );
-    
+
     certificates.add(certificate);
     await _saveCertificates(certificates);
+
+    // Додаємо подарунковий сертифікат від партнерів автоматично
+    await UserPreferences.addRewardForCertificate(category);
   }
 
   // Отримати сертифікати

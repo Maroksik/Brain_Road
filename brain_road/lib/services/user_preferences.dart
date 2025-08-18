@@ -18,6 +18,8 @@ class UserPreferences {
     _preferences ??= await SharedPreferences.getInstance();
   }
 
+ 
+
   static bool get isFirstLaunch {
     if (_preferences == null) return true;
     return _preferences!.getBool(_isFirstLaunchKey) ?? true;
@@ -278,4 +280,7 @@ class UserPreferences {
       };
     }
   }
+
+  
 }
+

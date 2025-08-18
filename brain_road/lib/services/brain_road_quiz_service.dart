@@ -1,3 +1,4 @@
+import 'package:brain_road/services/user_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -61,6 +62,37 @@ class BrainRoadQuizService {
       key, 
       Map<String, dynamic>.from(value as Map)
     ));
+  }
+
+  static Future<void> generateCertificateWithReward(
+    String quizId, 
+    int score, 
+    int totalQuestions
+  ) async {
+    try {
+      print('🎓 Generating certificate with reward for quiz: $quizId');
+      
+      // Створюємо сертифікат
+      await _generateCertificate(quizId, score, totalQuestions);
+      
+      // Отримуємо категорію
+      final category = _getCategoryByQuizId(quizId);
+      
+      // Додаємо винагороду
+      await UserPreferences.addRewardForCertificate(category);
+      
+      print('✅ Certificate and reward generated successfully');
+      
+    } catch (e) {
+      print('❌ Error generating certificate with reward: $e');
+      // Принаймні створюємо сертифікат
+      try {
+        await _generateCertificate(quizId, score, totalQuestions);
+        print('✅ Certificate created without reward');
+      } catch (certError) {
+        print('❌ Certificate creation failed: $certError');
+      }
+    }
   }
 
   static Future<void> _saveQuizScores(Map<String, Map<String, dynamic>> scores) async {

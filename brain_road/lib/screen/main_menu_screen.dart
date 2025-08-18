@@ -438,7 +438,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).pop();
-                        _resetUserData();
+
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.error,
@@ -465,18 +465,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
     );
   }
 
-  void _resetUserData() async {
-    // Очищуємо всі дані користувача
-    await UserPreferences.clearUserData();
-    
-    if (mounted) {
-      // Навігуємо назад до splash screen, який потім перенаправить до welcome
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        '/',
-        (route) => false,
-      );
-    }
-  }
+  
 
   void _onMenuItemTap(MenuItemData item) {
     HapticFeedback.lightImpact();

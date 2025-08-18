@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../style/app_styles.dart';
 import '../services/brain_road_quiz_service.dart';
 import '../services/user_preferences.dart';
 import 'package:intl/intl.dart';
+// Remove duplicate import if present
 
 
 class BrainRoadCertificatesScreen extends StatefulWidget {
@@ -101,44 +105,82 @@ class _BrainRoadCertificatesScreenState extends State<BrainRoadCertificatesScree
 
   // Метод для додавання нового сертифіката з винагородою
   Future<void> _addCertificateWithReward(String quizId, String courseName, int score, int totalQuestions) async {
-    try {
-      // Створюємо сертифікат
-      final certificate = BrainRoadCertificate(
-        id: 'cert_${quizId}_${DateTime.now().millisecondsSinceEpoch}',
-        quizId: quizId,
-        category: _getCategoryByQuizId(quizId),
-        score: score,
-        totalQuestions: totalQuestions,
-        percentage: (score / totalQuestions * 100).round(),
-        stars: _calculateStars(score, totalQuestions),
-        earnedDate: DateTime.now(),
-        childName: await _getChildName(),
-        childAvatar: await _getChildAvatar(),
-        childAge: await _getChildAge(),
+  try {
+    print('🎯 Starting certificate creation process...');
+    
+    // 1. Створюємо сертифікат
+    final certificate = BrainRoadCertificate(
+      id: 'cert_${quizId}_${DateTime.now().millisecondsSinceEpoch}',
+      quizId: quizId,
+      category: courseName,
+      score: score,
+      totalQuestions: totalQuestions,
+      percentage: (score / totalQuestions * 100).round(),
+      stars: _calculateStars(score, totalQuestions),
+      earnedDate: DateTime.now(),
+      childName: UserPreferences.userName,
+      childAvatar: UserPreferences.userAvatar,
+      childAge: UserPreferences.userAge,
+    );
+    
+    // 2. Зберігаємо сертифікат
+    await _saveCertificate(certificate);
+    print('✅ Certificate saved');
+    
+    // 3. Додаємо винагороду
+    await UserPreferences.addRewardForCertificate(courseName);
+    print('✅ Reward added');
+    
+    // 4. Оновлюємо список сертифікатів
+    await _loadCertificates();
+    
+    // 5. Показуємо повідомлення
+    if (mounted) {
+      setState(() {
+        _showRewardNotification = true;
+        _newRewardTitle = _getRewardTitleForCourse(courseName);
+      });
+      
+      // Вібрація
+      HapticFeedback.heavyImpact();
+      
+      // Показуємо діалог
+      _showRewardDialog(courseName);
+    }
+    
+    print('🎉 Certificate with reward process completed successfully');
+    
+  } catch (e) {
+    print('❌ Error in _addCertificateWithReward: $e');
+    
+    // Показуємо повідомлення про помилку користувачу
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Помилка при створенні сертифікату: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
-      
-      // Зберігаємо сертифікат
-      await _saveCertificate(certificate);
-      
-      // Автоматично додаємо винагороду
-      await UserPreferences.addRewardForCertificate(courseName);
-      
-      // Оновлюємо список сертифікатів
-      await _loadCertificates();
-      
-      // Показуємо повідомлення про винагороду
-      _showRewardNotification = true;
-      _newRewardTitle = _getRewardTitleForCourse(courseName);
-      
-      if (mounted) {
-        HapticFeedback.heavyImpact();
-        _showRewardDialog(courseName);
-      }
-      
-    } catch (e) {
-      print('Error adding certificate with reward: $e');
     }
   }
+}
+
+// Допоміжний метод збереження сертифікату
+Future<void> _saveCertificate(certificate) async {
+  try {
+    final certificates = await BrainRoadQuizService.getCertificates();
+    certificates.add(certificate);
+    
+    // Зберігаємо через SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final certificatesJson = certificates.map((cert) => cert.toJson()).toList();
+    await prefs.setString('brain_road_certificates', json.encode(certificatesJson));
+    
+  } catch (e) {
+    print('Error saving certificate: $e');
+    throw e;
+  }
+}
 
   // Демо метод для тестування (видаліть у продакшні)
   void _addDemoCertificate() async {
@@ -202,11 +244,7 @@ class _BrainRoadCertificatesScreenState extends State<BrainRoadCertificatesScree
     return await UserPreferences.userData['age'] ?? '8-10';
   }
 
-  Future<void> _saveCertificate(BrainRoadCertificate certificate) async {
-    final currentCertificates = await BrainRoadQuizService.getCertificates();
-    currentCertificates.add(certificate as BrainRoadCertificate);
-    // Використовуйте ваш існуючий метод збереження
-  }
+
 
   Color _getCertificateColor(String category) {
     switch (category.toLowerCase()) {

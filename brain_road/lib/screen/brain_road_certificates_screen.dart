@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'package:brain_road/services/brain_road_quiz_service.dart';
+
+// import '../models/brain_road_certificate.dart';
+import 'package:brain_road/services/brain_road_quiz_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -106,7 +109,7 @@ class _BrainRoadCertificatesScreenState extends State<BrainRoadCertificatesScree
 
 
 // ВИПРАВЛЕНИЙ метод з правильним типом параметра
-Future<void> _saveCertificate(dynamic certificate) async {
+Future<void> _saveCertificate(BrainRoadCertificate certificate) async {
   try {
     final prefs = await SharedPreferences.getInstance();
     final certificates = await BrainRoadQuizService.getCertificates();
@@ -1337,64 +1340,4 @@ void _showCertificateDialog(String courseName, bool hasReward) {
     return _certificates.map((cert) => cert.percentage).reduce((a, b) => a > b ? a : b);
   }
 }
-
-// Certificate data model (якщо ще не існує)
-class BrainRoadCertificate {
-  final String id;
-  final String quizId;
-  final String category;
-  final int score;
-  final int totalQuestions;
-  final int percentage;
-  final int stars;
-  final DateTime earnedDate;
-  final String childName;
-  final String childAvatar;
-  final String childAge;
-
-  BrainRoadCertificate({
-    required this.id,
-    required this.quizId,
-    required this.category,
-    required this.score,
-    required this.totalQuestions,
-    required this.percentage,
-    required this.stars,
-    required this.earnedDate,
-    required this.childName,
-    required this.childAvatar,
-    required this.childAge,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'quizId': quizId,
-      'category': category,
-      'score': score,
-      'totalQuestions': totalQuestions,
-      'percentage': percentage,
-      'stars': stars,
-      'earnedDate': earnedDate.toIso8601String(),
-      'childName': childName,
-      'childAvatar': childAvatar,
-      'childAge': childAge,
-    };
-  }
-
-  factory BrainRoadCertificate.fromJson(Map<String, dynamic> json) {
-    return BrainRoadCertificate(
-      id: json['id'],
-      quizId: json['quizId'],
-      category: json['category'],
-      score: json['score'],
-      totalQuestions: json['totalQuestions'],
-      percentage: json['percentage'],
-      stars: json['stars'],
-      earnedDate: DateTime.parse(json['earnedDate']),
-      childName: json['childName'],
-      childAvatar: json['childAvatar'],
-      childAge: json['childAge'],
-    );
-  }
-}
+// Remove local BrainRoadCertificate model, use the one from brain_road_quiz_service.dart }

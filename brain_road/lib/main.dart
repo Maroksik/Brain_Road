@@ -59,7 +59,7 @@ class BrainRoadApp extends StatelessWidget {
         '/registration': (context) => const RegistrationScreen(),
         '/partners': (context) => const PartnersScreen(),
         '/certificates': (context) => const BrainRoadCertificatesScreen(),
-        '/quizzes': (context) => const BrainRoadQuizzesScreen(),
+        '/quizzes': (context) => const BrainRoadQuizzesListScreen(),
       },
     );
   }

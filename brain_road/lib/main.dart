@@ -2,6 +2,7 @@ import 'package:brain_road/screen/brain_road_certificates_screen.dart';
 import 'package:brain_road/screen/brain_road_quizzes_list_screen.dart';
 import 'package:brain_road/screen/partners_screen.dart';
 import 'package:brain_road/screen/registration_screen.dart';
+import 'package:brain_road/screen/rewards_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'screen/welcome_screen.dart';
@@ -60,6 +61,7 @@ class BrainRoadApp extends StatelessWidget {
         '/partners': (context) => const PartnersScreen(),
         '/certificates': (context) => const BrainRoadCertificatesScreen(),
         '/quizzes': (context) => const BrainRoadQuizzesListScreen(),
+        '/rewards': (context) => const RewardsScreen(),
       },
     );
   }

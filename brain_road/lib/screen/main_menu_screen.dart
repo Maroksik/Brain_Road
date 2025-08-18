@@ -58,6 +58,14 @@ class _MainMenuScreenState extends State<MainMenuScreen>
       gradient: [AppColors.darkBlue, AppColors.lightBlue],
       route: '/quizzes',
     ),
+    MenuItemData(
+      icon: Icons.card_giftcard, // Нова іконка для винагород
+      title: 'Rewards',
+      subtitle: 'Your prizes',
+      emoji: '🎁',
+      gradient: [const Color(0xFFE91E63), const Color(0xFFF48FB1)], // Рожевий градієнт
+      route: '/rewards',
+    ),
   ];
 
   @override
@@ -481,8 +489,9 @@ class _MainMenuScreenState extends State<MainMenuScreen>
       Navigator.of(context).pushNamed('/quizzes');
     } else if (item.route == '/certificates') {
       Navigator.of(context).pushNamed('/certificates');
-    } 
-    else {
+    } else if (item.route == '/rewards') { 
+      Navigator.of(context).pushNamed('/rewards');
+    } else {
       // Show coming soon dialog for other routes
       _showComingSoonDialog(item);
     }

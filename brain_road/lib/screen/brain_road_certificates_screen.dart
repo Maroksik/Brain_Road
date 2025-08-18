@@ -1,10 +1,9 @@
 import 'dart:convert';
-
+import 'package:brain_road/services/brain_road_quiz_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../style/app_styles.dart';
-import '../services/brain_road_quiz_service.dart';
 import '../services/user_preferences.dart';
 import 'package:intl/intl.dart';
 // Remove duplicate import if present
@@ -103,12 +102,36 @@ class _BrainRoadCertificatesScreenState extends State<BrainRoadCertificatesScree
     }
   }
 
-  // Метод для додавання нового сертифіката з винагородою
-  Future<void> _addCertificateWithReward(String quizId, String courseName, int score, int totalQuestions) async {
+  
+
+
+// ВИПРАВЛЕНИЙ метод з правильним типом параметра
+Future<void> _saveCertificate(dynamic certificate) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final certificates = await BrainRoadQuizService.getCertificates();
+    certificates.add(certificate);
+    
+    // Зберігаємо через SharedPreferences з правильною структурою
+    final certificatesJson = certificates.map((cert) => cert.toJson()).toList();
+    await prefs.setString('br_earned_certificates', json.encode(certificatesJson));
+    
+    print('✅ Certificate saved successfully');
+    
+  } catch (e, stackTrace) {
+    print('❌ Error saving certificate: $e');
+    print('📍 Stack trace: $stackTrace');
+    rethrow;
+  }
+}
+
+
+// Виправлений метод додавання сертифіката з винагородою
+Future<void> _addCertificateWithReward(String quizId, String courseName, int score, int totalQuestions) async {
   try {
     print('🎯 Starting certificate creation process...');
     
-    // 1. Створюємо сертифікат
+    // 1. Створюємо сертифікат з правильною структурою
     final certificate = BrainRoadCertificate(
       id: 'cert_${quizId}_${DateTime.now().millisecondsSinceEpoch}',
       quizId: quizId,
@@ -123,13 +146,18 @@ class _BrainRoadCertificatesScreenState extends State<BrainRoadCertificatesScree
       childAge: UserPreferences.userAge,
     );
     
-    // 2. Зберігаємо сертифікат
+    // 2. Зберігаємо сертифікат через виправлений метод
     await _saveCertificate(certificate);
     print('✅ Certificate saved');
     
-    // 3. Додаємо винагороду
-    await UserPreferences.addRewardForCertificate(courseName);
-    print('✅ Reward added');
+    // 3. Додаємо винагороду тільки якщо бал >= 80%
+    final percentage = (score / totalQuestions * 100);
+    if (percentage >= 80) {
+      await UserPreferences.addRewardForCertificate(courseName);
+      print('✅ Reward added');
+    } else {
+      print('⚠️ Score too low for reward ($percentage% < 80%), but certificate created');
+    }
     
     // 4. Оновлюємо список сертифікатів
     await _loadCertificates();
@@ -138,20 +166,21 @@ class _BrainRoadCertificatesScreenState extends State<BrainRoadCertificatesScree
     if (mounted) {
       setState(() {
         _showRewardNotification = true;
-        _newRewardTitle = _getRewardTitleForCourse(courseName);
+        _newRewardTitle = percentage >= 80 ? _getRewardTitleForCourse(courseName) : 'Certificate Earned!';
       });
       
       // Вібрація
       HapticFeedback.heavyImpact();
       
       // Показуємо діалог
-      _showRewardDialog(courseName);
+      _showCertificateDialog(courseName, percentage >= 80);
     }
     
-    print('🎉 Certificate with reward process completed successfully');
+    print('🎉 Certificate process completed successfully');
     
-  } catch (e) {
+  } catch (e, stackTrace) {
     print('❌ Error in _addCertificateWithReward: $e');
+    print('📍 Stack trace: $stackTrace');
     
     // Показуємо повідомлення про помилку користувачу
     if (mounted) {
@@ -159,27 +188,73 @@ class _BrainRoadCertificatesScreenState extends State<BrainRoadCertificatesScree
         SnackBar(
           content: Text('Помилка при створенні сертифікату: $e'),
           backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
         ),
       );
     }
   }
 }
 
-// Допоміжний метод збереження сертифікату
-Future<void> _saveCertificate(certificate) async {
-  try {
-    final certificates = await BrainRoadQuizService.getCertificates();
-    certificates.add(certificate);
-    
-    // Зберігаємо через SharedPreferences
-    final prefs = await SharedPreferences.getInstance();
-    final certificatesJson = certificates.map((cert) => cert.toJson()).toList();
-    await prefs.setString('brain_road_certificates', json.encode(certificatesJson));
-    
-  } catch (e) {
-    print('Error saving certificate: $e');
-    throw e;
-  }
+// Новий метод для показу діалогу (замість _showRewardDialog)
+void _showCertificateDialog(String courseName, bool hasReward) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Column(
+          children: [
+            Icon(
+              hasReward ? Icons.emoji_events : Icons.assignment_turned_in,
+              size: 64,
+              color: hasReward ? Colors.amber : Colors.blue,
+            ),
+            SizedBox(height: 16),
+            Text(
+              hasReward ? '🎉 Congratulations!' : '📜 Certificate Earned!',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              hasReward 
+                ? 'You\'ve earned a certificate and reward for completing $courseName!'
+                : 'You\'ve earned a certificate for completing $courseName!',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+            if (!hasReward) ...[
+              SizedBox(height: 16),
+              Text(
+                'Tip: Score 80% or higher to earn rewards!',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Colors.orange),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              if (hasReward) {
+                // Переходимо на сторінку винагород
+                Navigator.pushNamed(context, '/rewards');
+              }
+            },
+            child: Text(hasReward ? 'View Rewards' : 'OK'),
+          ),
+        ],
+      );
+    },
+  );
 }
 
   // Демо метод для тестування (видаліть у продакшні)

@@ -20,6 +20,7 @@ class AppColors {
   static const Color warning = yellow;
   static const Color error = Color(0xFFE53E3E);
   static const Color info = darkBlue;
+  static const Color primary = darkBlue;
 }
 
 /// Клас з текстовими стилями

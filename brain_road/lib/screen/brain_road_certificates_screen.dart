@@ -977,317 +977,432 @@ void _showCertificateDialog(String courseName, bool hasReward) {
     );
   }
 
+
   Widget _buildCertificateDialog(BrainRoadCertificate certificate, double screenWidth) {
     final color = _getCertificateColor(certificate.category);
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isSmallScreen = screenWidth < 400;
+    final isTablet = screenWidth > 600;
     
     return Dialog(
       backgroundColor: Colors.transparent,
-      child: Container(
-        width: screenWidth * 0.9,
-        padding: EdgeInsets.all(AppSizes.paddingLarge),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
-          border: Border.all(color: color, width: 4),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.3),
-              blurRadius: 30,
-              spreadRadius: 5,
-            ),
-          ],
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: isTablet ? screenWidth * 0.15 : 16.0,
+        vertical: isSmallScreen ? 20.0 : 40.0,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: isTablet ? 500 : screenWidth * 0.92,
+          maxHeight: screenHeight * 0.85, // Обмежуємо висоту
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Certificate header with decorative elements
-            Container(
-              padding: EdgeInsets.all(AppSizes.paddingLarge),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    color.withOpacity(0.1),
-                    color.withOpacity(0.05),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+        child: Container(
+          padding: EdgeInsets.all(isSmallScreen ? 16.0 : 20.0),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(isSmallScreen ? 16.0 : 20.0),
+            border: Border.all(color: color, width: 3),
+            boxShadow: [
+              BoxShadow(
+                color: color.withOpacity(0.3),
+                blurRadius: 20,
+                spreadRadius: 3,
               ),
-              child: Column(
-                children: [
-                  // Award emoji with pulse animation
-                  ScaleTransition(
-                    scale: _pulseAnimation,
-                    child: Text(
-                      '🏆',
-                      style: TextStyle(fontSize: screenWidth * 0.2),
-                    ),
-                  ),
-                  
-                  SizedBox(height: AppSizes.paddingMedium),
-                  
-                  Text(
-                    'BRAIN ROAD CERTIFICATE',
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.sectionTitle.copyWith(
-                      fontSize: screenWidth * 0.04,
-                      color: color,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 2.0,
-                    ),
-                  ),
-                  
-                  Container(
-                    width: screenWidth * 0.3,
-                    height: 2,
-                    margin: EdgeInsets.symmetric(vertical: AppSizes.paddingSmall),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [color, color.withOpacity(0.3)]),
-                      borderRadius: BorderRadius.circular(1),
-                    ),
-                  ),
-                  
-                  Text(
-                    'OF ACHIEVEMENT',
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.bodyText.copyWith(
-                      fontSize: screenWidth * 0.035,
-                      color: color.withOpacity(0.8),
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            SizedBox(height: AppSizes.paddingLarge),
-            
-            // Certificate details
-            Text(
-              'This certifies that',
-              style: AppTextStyles.bodyText.copyWith(
-                fontSize: screenWidth * 0.04,
-                color: AppColors.grey,
-                fontStyle: FontStyle.italic,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            
-            SizedBox(height: AppSizes.paddingSmall),
-            
-            // Child name with avatar
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            ],
+          ),
+          child: SingleChildScrollView( // Додаємо прокручування
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  certificate.childAvatar,
-                  style: TextStyle(fontSize: screenWidth * 0.08),
-                ),
-                SizedBox(width: AppSizes.paddingSmall),
-                Text(
-                  certificate.childName,
-                  style: AppTextStyles.sectionTitle.copyWith(
-                    fontSize: screenWidth * 0.06,
-                    color: AppColors.darkBlue,
-                    fontWeight: FontWeight.bold,
+                // Хедер сертифіката з декоративними елементами
+                Container(
+                  padding: EdgeInsets.all(isSmallScreen ? 16.0 : 20.0),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        color.withOpacity(0.1),
+                        color.withOpacity(0.05),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                    borderRadius: BorderRadius.circular(isSmallScreen ? 12.0 : 16.0),
+                    border: Border.all(
+                      color: color.withOpacity(0.2),
+                      width: 1,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            
-            SizedBox(height: AppSizes.paddingMedium),
-            
-            Text(
-              'has successfully completed',
-              textAlign: TextAlign.center,
-              style: AppTextStyles.bodyText.copyWith(
-                fontSize: screenWidth * 0.04,
-                color: AppColors.grey,
-              ),
-            ),
-            
-            SizedBox(height: AppSizes.paddingSmall),
-            
-            // Category name with highlight
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSizes.paddingLarge,
-                vertical: AppSizes.paddingMedium,
-              ),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [color, color.withOpacity(0.8)]),
-                borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
-                boxShadow: [
-                  BoxShadow(
-                    color: color.withOpacity(0.3),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Text(
-                certificate.category,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.cardTitle.copyWith(
-                  fontSize: screenWidth * 0.05,
-                  color: AppColors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            
-            SizedBox(height: AppSizes.paddingLarge),
-            
-            // Performance metrics
-            Container(
-              padding: EdgeInsets.all(AppSizes.paddingMedium),
-              decoration: BoxDecoration(
-                color: AppColors.grey.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
-                border: Border.all(
-                  color: AppColors.grey.withOpacity(0.2),
-                  width: 1,
-                ),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  child: Column(
                     children: [
-                      _buildMetric('Score', '${certificate.score}/${certificate.totalQuestions}', Icons.quiz, screenWidth),
-                      _buildDivider(),
-                      _buildMetric('Percentage', '${certificate.percentage}%', Icons.percent, screenWidth),
-                      _buildDivider(),
-                      _buildMetric('Rating', '${certificate.stars}/3', Icons.star, screenWidth),
+                      // Іконка сертифіката
+                      Container(
+                        width: isSmallScreen ? 60.0 : 80.0,
+                        height: isSmallScreen ? 60.0 : 80.0,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [color, color.withOpacity(0.7)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: color.withOpacity(0.3),
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.emoji_events,
+                            size: isSmallScreen ? 30.0 : 40.0,
+                            color: AppColors.white,
+                          ),
+                        ),
+                      ),
+                      
+                      SizedBox(height: isSmallScreen ? 12.0 : 16.0),
+                      
+                      // Заголовок сертифіката
+                      Text(
+                        'Certificate of Achievement',
+                        style: AppTextStyles.sectionTitle.copyWith(
+                          fontSize: isSmallScreen ? 18.0 : 22.0,
+                          fontWeight: FontWeight.bold,
+                          color: color,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      
+                      SizedBox(height: isSmallScreen ? 8.0 : 12.0),
+                      
+                      // Декоративна лінія
+                      Container(
+                        width: isSmallScreen ? 80.0 : 100.0,
+                        height: 2,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              color,
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                  
-                  SizedBox(height: AppSizes.paddingMedium),
-                  
-                  // Stars display
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(3, (index) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingXSmall),
-                        child: Icon(
-                          Icons.star,
-                          size: 32,
-                          color: index < certificate.stars 
-                              ? AppColors.yellow 
-                              : AppColors.grey.withOpacity(0.3),
-                        ),
-                      );
-                    }),
-                  ),
-                ],
-              ),
-            ),
-            
-            SizedBox(height: AppSizes.paddingLarge),
-            
-            // Date and signature
-            Column(
-              children: [
-                Text(
-                    'Awarded on ${DateFormat('MMMM dd, yyyy').format(certificate.earnedDate)}',
-                  style: AppTextStyles.bodyText.copyWith(
-                    fontSize: screenWidth * 0.035,
-                    color: AppColors.grey,
-                    fontStyle: FontStyle.italic,
-                  ),
-                  textAlign: TextAlign.center,
                 ),
                 
-                SizedBox(height: AppSizes.paddingMedium),
+                SizedBox(height: isSmallScreen ? 16.0 : 20.0),
                 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Column(
-                      children: [
-                        Container(
-                          width: screenWidth * 0.25,
-                          height: 1,
-                          color: AppColors.grey.withOpacity(0.5),
+                // Основна інформація про сертифікат
+                Container(
+                  padding: EdgeInsets.all(isSmallScreen ? 16.0 : 20.0),
+                  decoration: BoxDecoration(
+                    color: AppColors.grey.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(isSmallScreen ? 12.0 : 16.0),
+                    border: Border.all(
+                      color: AppColors.grey.withOpacity(0.1),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      // Ім'я дитини
+                      Text(
+                        'This certifies that',
+                        style: AppTextStyles.bodyText.copyWith(
+                          fontSize: isSmallScreen ? 14.0 : 16.0,
+                          color: AppColors.grey,
                         ),
-                        SizedBox(height: AppSizes.paddingXSmall),
-                        Text(
-                          'Brain Road Academy',
-                          style: AppTextStyles.bodyText.copyWith(
-                            fontSize: screenWidth * 0.03,
-                            color: AppColors.grey,
+                        textAlign: TextAlign.center,
+                      ),
+                      
+                      SizedBox(height: isSmallScreen ? 8.0 : 12.0),
+                      
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            certificate.childAvatar,
+                            style: TextStyle(fontSize: isSmallScreen ? 24.0 : 32.0),
                           ),
+                          SizedBox(width: isSmallScreen ? 8.0 : 12.0),
+                          Flexible(
+                            child: Text(
+                              certificate.childName.isNotEmpty ? certificate.childName : 'Student',
+                              style: AppTextStyles.sectionTitle.copyWith(
+                                fontSize: isSmallScreen ? 20.0 : 24.0,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.darkBlue,
+                              ),
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      SizedBox(height: isSmallScreen ? 12.0 : 16.0),
+                      
+                      Text(
+                        'has successfully completed',
+                        style: AppTextStyles.bodyText.copyWith(
+                          fontSize: isSmallScreen ? 14.0 : 16.0,
+                          color: AppColors.grey,
                         ),
+                        textAlign: TextAlign.center,
+                      ),
+                      
+                      SizedBox(height: isSmallScreen ? 8.0 : 12.0),
+                      
+                      // Категорія курсу
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isSmallScreen ? 16.0 : 20.0,
+                          vertical: isSmallScreen ? 8.0 : 12.0,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
+                          ),
+                          borderRadius: BorderRadius.circular(isSmallScreen ? 8.0 : 12.0),
+                          border: Border.all(color: color.withOpacity(0.3), width: 1),
+                        ),
+                        child: Text(
+                          certificate.category,
+                          style: AppTextStyles.sectionTitle.copyWith(
+                            fontSize: isSmallScreen ? 16.0 : 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: color,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                SizedBox(height: isSmallScreen ? 16.0 : 20.0),
+                
+                // Результати
+                Container(
+                  padding: EdgeInsets.all(isSmallScreen ? 16.0 : 20.0),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.green.withOpacity(0.1),
+                        AppColors.green.withOpacity(0.05),
                       ],
                     ),
-                    Column(
-                      children: [
-                        Text(
-                          '🧠',
-                          style: TextStyle(fontSize: screenWidth * 0.08),
+                    borderRadius: BorderRadius.circular(isSmallScreen ? 12.0 : 16.0),
+                    border: Border.all(
+                      color: AppColors.green.withOpacity(0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      // Зірки
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(3, (index) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 2.0),
+                            child: Icon(
+                              index < certificate.stars ? Icons.star : Icons.star_border,
+                              color: index < certificate.stars 
+                                  ? AppColors.yellow 
+                                  : AppColors.grey.withOpacity(0.3),
+                              size: isSmallScreen ? 24.0 : 30.0,
+                            ),
+                          );
+                        }),
+                      ),
+                      
+                      SizedBox(height: isSmallScreen ? 12.0 : 16.0),
+                      
+                      // Статистика в адаптивній сітці
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: isSmallScreen ? 16.0 : 24.0,
+                        runSpacing: isSmallScreen ? 12.0 : 16.0,
+                        children: [
+                          _buildStatItem(
+                            icon: Icons.quiz,
+                            label: 'Score',
+                            value: '${certificate.score}/${certificate.totalQuestions}',
+                            color: AppColors.darkBlue,
+                            isSmallScreen: isSmallScreen,
+                          ),
+                          _buildStatItem(
+                            icon: Icons.percent,
+                            label: 'Percentage',
+                            value: '${certificate.percentage}%',
+                            color: AppColors.green,
+                            isSmallScreen: isSmallScreen,
+                          ),
+                          _buildStatItem(
+                            icon: Icons.calendar_today,
+                            label: 'Earned',
+                            value: DateFormat('MMM dd, yyyy').format(certificate.earnedDate),
+                            color: AppColors.yellow,
+                            isSmallScreen: isSmallScreen,
+                          ),
+                        ],
+                      ),
+                      
+                      SizedBox(height: isSmallScreen ? 12.0 : 16.0),
+                      
+                      // Оцінка результату
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isSmallScreen ? 12.0 : 16.0,
+                          vertical: isSmallScreen ? 6.0 : 8.0,
                         ),
-                        Text(
-                          'Official Seal',
-                          style: AppTextStyles.bodyText.copyWith(
-                            fontSize: screenWidth * 0.025,
-                            color: AppColors.grey,
+                        decoration: BoxDecoration(
+                          color: _getGradeColor(certificate.percentage).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(isSmallScreen ? 6.0 : 8.0),
+                          border: Border.all(
+                            color: _getGradeColor(certificate.percentage).withOpacity(0.3),
+                            width: 1,
                           ),
                         ),
-                      ],
+                        child: Text(
+                          certificate.percentage >= 90
+                              ? 'Excellent'
+                              : certificate.percentage >= 80
+                                  ? 'Very Good'
+                                  : certificate.percentage >= 70
+                                      ? 'Good'
+                                      : certificate.percentage >= 50
+                                          ? 'Satisfactory'
+                                          : 'Needs Improvement',
+                          style: AppTextStyles.bodyText.copyWith(
+                            fontSize: isSmallScreen ? 14.0 : 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: _getGradeColor(certificate.percentage),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                SizedBox(height: isSmallScreen ? 20.0 : 24.0),
+                
+                // Кнопки дій
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.grey,
+                          side: BorderSide(color: AppColors.grey.withOpacity(0.3)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(isSmallScreen ? 8.0 : 12.0),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            vertical: isSmallScreen ? 12.0 : 16.0,
+                          ),
+                        ),
+                        child: Text(
+                          'Close',
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 14.0 : 16.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: isSmallScreen ? 12.0 : 16.0),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _shareCertificate(certificate);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: color,
+                          foregroundColor: AppColors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(isSmallScreen ? 8.0 : 12.0),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            vertical: isSmallScreen ? 12.0 : 16.0,
+                          ),
+                          elevation: 2,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.share,
+                              size: isSmallScreen ? 16.0 : 18.0,
+                            ),
+                            SizedBox(width: isSmallScreen ? 6.0 : 8.0),
+                            Text(
+                              'Share',
+                              style: TextStyle(
+                                fontSize: isSmallScreen ? 14.0 : 16.0,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
-            
-            SizedBox(height: AppSizes.paddingXLarge),
-            
-            // Action buttons
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => Navigator.of(context).pop(),
-                    style: AppButtonStyles.secondaryButton.copyWith(
-                      padding: WidgetStateProperty.all(
-                        EdgeInsets.symmetric(vertical: AppSizes.paddingMedium),
-                      ),
-                    ),
-                    icon: const Icon(Icons.close, size: 18),
-                    label: Text(
-                      'Close',
-                      style: AppTextStyles.buttonMedium.copyWith(
-                        fontSize: screenWidth * 0.04,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: AppSizes.paddingMedium),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pushNamed('/rewards');
-                    },
-                    style: AppButtonStyles.primaryButton.copyWith(
-                      padding: WidgetStateProperty.all(
-                        EdgeInsets.symmetric(vertical: AppSizes.paddingMedium),
-                      ),
-                    ),
-                    icon: const Icon(Icons.card_giftcard, size: 18),
-                    label: Text(
-                      'View Rewards',
-                      style: AppTextStyles.buttonMedium.copyWith(
-                        fontSize: screenWidth * 0.04,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildStatItem({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+    required bool isSmallScreen,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(isSmallScreen ? 8.0 : 12.0),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(isSmallScreen ? 6.0 : 8.0),
+        border: Border.all(color: color.withOpacity(0.2), width: 1),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: color,
+            size: isSmallScreen ? 18.0 : 20.0,
+          ),
+          SizedBox(height: isSmallScreen ? 4.0 : 6.0),
+          Text(
+            value,
+            style: AppTextStyles.bodyText.copyWith(
+              fontSize: isSmallScreen ? 12.0 : 14.0,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          Text(
+            label,
+            style: AppTextStyles.bodyText.copyWith(
+              fontSize: isSmallScreen ? 10.0 : 12.0,
+              color: AppColors.grey,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1338,6 +1453,27 @@ void _showCertificateDialog(String courseName, bool hasReward) {
   int _getBestScore() {
     if (_certificates.isEmpty) return 0;
     return _certificates.map((cert) => cert.percentage).reduce((a, b) => a > b ? a : b);
+  }
+
+  // Add this method to fix the error
+  void _shareCertificate(BrainRoadCertificate certificate) {
+    // TODO: Implement sharing functionality, e.g. using 'share_plus' package
+    // For now, just show a snackbar as a placeholder
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Share certificate: ${certificate.category} (${certificate.percentage}%)'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  // Added method to return color based on percentage
+  Color _getGradeColor(int percentage) {
+    if (percentage >= 90) return AppColors.green;
+    if (percentage >= 80) return AppColors.darkBlue;
+    if (percentage >= 70) return AppColors.lightBlue;
+    if (percentage >= 50) return AppColors.yellow;
+    return AppColors.grey;
   }
 }
 // Remove local BrainRoadCertificate model, use the one from brain_road_quiz_service.dart }

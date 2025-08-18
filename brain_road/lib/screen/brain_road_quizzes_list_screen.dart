@@ -545,15 +545,15 @@ class _BrainRoadQuizzesScreenState extends State<BrainRoadQuizzesScreen>
                           onPressed: () => _startQuiz(quiz),
                           style: isCompleted 
                               ? AppButtonStyles.successButton.copyWith(
-                                  backgroundColor: MaterialStateProperty.all(
+                                  backgroundColor: WidgetStateProperty.all(
                                     _getQuizColor(quiz.category).withOpacity(0.2),
                                   ),
-                                  foregroundColor: MaterialStateProperty.all(
+                                  foregroundColor: WidgetStateProperty.all(
                                     _getQuizColor(quiz.category),
                                   ),
                                 )
                               : AppButtonStyles.primaryButton.copyWith(
-                                  backgroundColor: MaterialStateProperty.all(
+                                  backgroundColor: WidgetStateProperty.all(
                                     _getQuizColor(quiz.category),
                                   ),
                                 ),

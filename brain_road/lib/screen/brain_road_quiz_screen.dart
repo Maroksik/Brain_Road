@@ -357,62 +357,62 @@ class _BrainRoadQuizScreenState extends State<BrainRoadQuizScreen>
   }
 
   Widget _buildNavigationControls() {
-    return Container(
-      padding: EdgeInsets.all(AppSizes.paddingLarge),
-      child: Row(
-        children: [
-          if (_currentQuestionIndex > 0)
-            Expanded(
-              child: ElevatedButton(
-                onPressed: _previousQuestion,
-                style: AppButtonStyles.secondaryButton.copyWith(
-                  backgroundColor: MaterialStateProperty.all(
-                    AppColors.white.withOpacity(0.1),
-                  ),
-                  foregroundColor: MaterialStateProperty.all(AppColors.white),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.arrow_back, size: 18),
-                    SizedBox(width: AppSizes.paddingXSmall),
-                    const Text('Previous'),
-                  ],
-                ),
-              ),
-            ),
-          
-          if (_currentQuestionIndex > 0) SizedBox(width: AppSizes.paddingMedium),
-          
+  return Container(
+    padding: EdgeInsets.all(AppSizes.paddingLarge),
+    child: Row(
+      children: [
+        if (_currentQuestionIndex > 0)
           Expanded(
             child: ElevatedButton(
-              onPressed: _isCurrentAnswered() ? _nextQuestion : null,
-              style: _isCurrentAnswered() 
-                  ? AppButtonStyles.primaryButton
-                  : AppButtonStyles.disabledButton,
+              onPressed: _previousQuestion,
+              style: AppButtonStyles.secondaryButton.copyWith(
+                backgroundColor: WidgetStateProperty.all(  // ЗАМІНЕНО з MaterialStateProperty
+                  AppColors.white.withOpacity(0.1),
+                ),
+                foregroundColor: WidgetStateProperty.all(AppColors.white),  // ЗАМІНЕНО з MaterialStateProperty
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    _currentQuestionIndex < widget.quiz.questions.length - 1
-                        ? 'Next'
-                        : 'Finish',
-                  ),
+                  const Icon(Icons.arrow_back, size: 18),
                   SizedBox(width: AppSizes.paddingXSmall),
-                  Icon(
-                    _currentQuestionIndex < widget.quiz.questions.length - 1
-                        ? Icons.arrow_forward
-                        : Icons.check,
-                    size: 18,
-                  ),
+                  const Text('Previous'),
                 ],
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        
+        if (_currentQuestionIndex > 0) SizedBox(width: AppSizes.paddingMedium),
+        
+        Expanded(
+          child: ElevatedButton(
+            onPressed: _isCurrentAnswered() ? _nextQuestion : null,
+            style: _isCurrentAnswered() 
+                ? AppButtonStyles.primaryButton
+                : AppButtonStyles.disabledButton,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  _currentQuestionIndex < widget.quiz.questions.length - 1
+                      ? 'Next'
+                      : 'Finish',
+                ),
+                SizedBox(width: AppSizes.paddingXSmall),
+                Icon(
+                  _currentQuestionIndex < widget.quiz.questions.length - 1
+                      ? Icons.arrow_forward
+                      : Icons.check,
+                  size: 18,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildResultScreen() {
     final correctAnswers = _calculateScore();

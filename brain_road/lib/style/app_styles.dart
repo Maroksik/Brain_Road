@@ -242,6 +242,17 @@ class AppButtonStyles {
     minimumSize: const Size(double.infinity, AppSizes.buttonHeight),
   );
   
+  // ДОДАЄМО secondaryButton (він був null!)
+  static ButtonStyle secondaryButton = ElevatedButton.styleFrom(
+    backgroundColor: AppColors.grey.withOpacity(0.2),
+    foregroundColor: AppColors.darkBlue,
+    elevation: 0,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+    ),
+    minimumSize: const Size(double.infinity, AppSizes.buttonHeight),
+  );
+  
   // Вимкнена кнопка
   static ButtonStyle disabledButton = ElevatedButton.styleFrom(
     backgroundColor: AppColors.grey.withOpacity(0.3),
@@ -277,8 +288,6 @@ class AppButtonStyles {
       vertical: AppSizes.paddingSmall,
     ),
   );
-
-  static var secondaryButton;
 }
 
 /// Клас з анімаціями

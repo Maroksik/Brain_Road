@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../style/app_styles.dart';
+import '../styles/app_styles.dart';
 import '../services/user_preferences.dart';
 import 'registration_screen.dart';
 

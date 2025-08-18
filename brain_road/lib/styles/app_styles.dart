@@ -145,8 +145,7 @@ class AppSizes {
 
 /// Клас з декораціями та стилями контейнерів
 class AppDecorations {
-  // Основні контейнери
-  static BoxDecoration cardDecoration = BoxDecoration(
+  static final BoxDecoration cardDecoration = BoxDecoration(
     color: AppColors.white,
     borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
     boxShadow: [
@@ -158,7 +157,7 @@ class AppDecorations {
     ],
   );
   
-  static BoxDecoration smallCardDecoration = BoxDecoration(
+  static final BoxDecoration smallCardDecoration = BoxDecoration(
     color: AppColors.white,
     borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
     boxShadow: [

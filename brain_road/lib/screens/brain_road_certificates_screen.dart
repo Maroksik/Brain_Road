@@ -6,7 +6,8 @@ import 'package:brain_road/services/brain_road_quiz_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../style/app_styles.dart';
+import '../models/brain_road_certificate.dart';
+import '../styles/app_styles.dart';
 import '../services/user_preferences.dart';
 import 'package:intl/intl.dart';
 // Remove duplicate import if present

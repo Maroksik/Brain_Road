@@ -1,7 +1,7 @@
 // Створіть файл lib/constants/rewards_constants.dart
 
 import 'package:flutter/material.dart';
-import '../screen/rewards_screen.dart';
+import 'package:brain_road/models/reward_data.dart';
 
 class RewardsConstants {
   
@@ -41,7 +41,7 @@ class RewardsConstants {
       ),
     ],
     
-    'Memory Training': [
+    'Memory Games': [
       RewardTemplate(
         title: 'Free Coffee & Pastry',
         partner: 'Café Central',
@@ -58,7 +58,7 @@ class RewardsConstants {
       ),
     ],
     
-    'Creative Thinking': [
+    'Word Puzzles': [
       RewardTemplate(
         title: '20% Off Shopping',
         partner: 'TechStore',
@@ -92,7 +92,7 @@ class RewardsConstants {
       ),
     ],
     
-    'Spatial Reasoning': [
+    'Spatial Thinking': [
       RewardTemplate(
         title: 'Pizza Party Voucher',
         partner: 'Code & Pizza',

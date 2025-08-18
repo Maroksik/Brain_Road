@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
-import '../style/app_styles.dart';
+import '../styles/app_styles.dart';
 import '../services/brain_road_quiz_service.dart';
 
 class BrainRoadQuizScreen extends StatefulWidget {

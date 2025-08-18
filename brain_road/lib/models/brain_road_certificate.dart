@@ -167,3 +167,5 @@ class BrainRoadCertificate {
     return 'BrainRoadCertificate{id: $id, category: $category, score: $score/$totalQuestions ($percentage%), stars: $stars, child: $childName}';
   }
 }
+
+// Модель BrainRoadCertificate без змін

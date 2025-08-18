@@ -1,7 +1,7 @@
 import 'package:brain_road/services/user_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/brain_road_certificate.dart';
 import 'dart:convert';
+import 'package:brain_road/models/brain_road_certificate.dart';
 
 class BrainRoadQuizService {
   static const String _completedQuizzesKey = 'br_completed_quizzes';
@@ -257,63 +257,6 @@ class BrainRoadQuizService {
     
     return null; // Всі квізи пройдені
   }
-}
-
-// Модель сертифіката для дітей
-class BrainRoadCertificate {
-  final String id;
-  final String quizId;
-  final String category;
-  final int score;
-  final int totalQuestions;
-  final int percentage;
-  final int stars;
-  final DateTime earnedDate;
-  final String childName;
-  final String childAvatar;
-  final String childAge;
-
-  BrainRoadCertificate({
-    required this.id,
-    required this.quizId,
-    required this.category,
-    required this.score,
-    required this.totalQuestions,
-    required this.percentage,
-    required this.stars,
-    required this.earnedDate,
-    required this.childName,
-    required this.childAvatar,
-    required this.childAge,
-  });
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'quizId': quizId,
-    'category': category,
-    'score': score,
-    'totalQuestions': totalQuestions,
-    'percentage': percentage,
-    'stars': stars,
-    'earnedDate': earnedDate.toIso8601String(),
-    'childName': childName,
-    'childAvatar': childAvatar,
-    'childAge': childAge,
-  };
-
-  factory BrainRoadCertificate.fromJson(Map<String, dynamic> json) => BrainRoadCertificate(
-    id: json['id'],
-    quizId: json['quizId'],
-    category: json['category'],
-    score: json['score'],
-    totalQuestions: json['totalQuestions'],
-    percentage: json['percentage'],
-    stars: json['stars'],
-    earnedDate: DateTime.parse(json['earnedDate']),
-    childName: json['childName'],
-    childAvatar: json['childAvatar'],
-    childAge: json['childAge'],
-  );
 }
 
 // Модель питання квіза для дітей

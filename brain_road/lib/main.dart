@@ -1,13 +1,13 @@
-import 'package:brain_road/screen/brain_road_certificates_screen.dart';
-import 'package:brain_road/screen/brain_road_quizzes_list_screen.dart';
-import 'package:brain_road/screen/partners_screen.dart';
-import 'package:brain_road/screen/registration_screen.dart';
-import 'package:brain_road/screen/rewards_screen.dart';
+import 'package:brain_road/screens/brain_road_certificates_screen.dart';
+import 'package:brain_road/screens/brain_road_quizzes_list_screen.dart';
+import 'package:brain_road/screens/partners_screen.dart';
+import 'package:brain_road/screens/registration_screen.dart';
+import 'package:brain_road/screens/rewards_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screen/welcome_screen.dart';
-import 'screen/main_menu_screen.dart';
-import 'style/app_styles.dart';
+import 'screens/welcome_screen.dart';
+import 'screens/main_menu_screen.dart';
+import 'styles/app_styles.dart';
 import 'services/user_preferences.dart';
 
 
@@ -50,7 +50,7 @@ class BrainRoadApp extends StatelessWidget {
           ),
           child: child!,
         );
-    },
+      },
       
       home: const SplashScreen(),
       
@@ -91,6 +91,11 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     _initAnimations();
+    _ensurePrefsAndStart();
+  }
+
+  Future<void> _ensurePrefsAndStart() async {
+    await UserPreferences.init();
     _startAnimationSequence();
   }
 

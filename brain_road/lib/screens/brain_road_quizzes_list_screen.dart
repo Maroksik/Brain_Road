@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../style/app_styles.dart';
+import '../styles/app_styles.dart';
 import '../services/brain_road_quiz_service.dart';
 import 'brain_road_quiz_screen.dart';
 

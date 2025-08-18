@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:brain_road/constants/rewards_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../screen/rewards_screen.dart';
+import 'package:brain_road/models/reward_data.dart';
 
 class UserPreferences {
   static const String _isFirstLaunchKey = 'is_first_launch';
@@ -19,15 +19,18 @@ class UserPreferences {
   }
 
   static bool get isFirstLaunch {
-    return _preferences?.getBool(_isFirstLaunchKey) ?? true;
+    if (_preferences == null) return true;
+    return _preferences!.getBool(_isFirstLaunchKey) ?? true;
   }
 
   static Future<void> setFirstLaunchCompleted() async {
+    await init();
     await _preferences?.setBool(_isFirstLaunchKey, false);
   }
 
   static bool get isRegistrationCompleted {
-    return _preferences?.getBool(_registrationCompletedKey) ?? false;
+    if (_preferences == null) return false;
+    return _preferences!.getBool(_registrationCompletedKey) ?? false;
   }
 
   static Future<void> saveUserData({

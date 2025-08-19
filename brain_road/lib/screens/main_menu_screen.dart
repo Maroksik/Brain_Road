@@ -28,6 +28,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
   late AnimationController _bounceController;
   late AnimationController _floatController;
   late AnimationController _pulseController;
+  late AnimationController _instructionsController;
   
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -35,6 +36,9 @@ class _MainMenuScreenState extends State<MainMenuScreen>
   late Animation<double> _floatAnimation;
   late Animation<double> _scaleAnimation;
   late Animation<double> _pulseAnimation;
+  late Animation<double> _instructionsAnimation;
+  
+  bool _isInstructionsExpanded = false;
 
   // Menu items data
   final List<MenuItemData> _menuItems = [
@@ -67,7 +71,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
       title: 'Rewards',
       subtitle: 'Your prizes',
       emoji: '🎁',
-      gradient: [const Color(0xFFE91E63), const Color(0xFFF48FB1)],
+      gradient: [AppColors.warning, AppColors.lightYellow],
       route: '/rewards',
     ),
   ];
@@ -96,12 +100,17 @@ class _MainMenuScreenState extends State<MainMenuScreen>
     );
     
     _floatController = AnimationController(
-      duration: const Duration(milliseconds: 3000),
+      duration: const Duration(seconds: 3),
       vsync: this,
     );
-
+    
     _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+    
+    _instructionsController = AnimationController(
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
     
@@ -110,11 +119,11 @@ class _MainMenuScreenState extends State<MainMenuScreen>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _fadeController,
-      curve: Curves.easeOut,
+      curve: Curves.easeInOut,
     ));
     
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.5),
+      begin: const Offset(0, 0.3),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _slideController,
@@ -126,7 +135,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _bounceController,
-      curve: Curves.bounceOut,
+      curve: Curves.elasticOut,
     ));
     
     _floatAnimation = Tween<double>(
@@ -138,18 +147,26 @@ class _MainMenuScreenState extends State<MainMenuScreen>
     ));
     
     _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _bounceController,
-      curve: Curves.elasticOut,
-    ));
-
-    _pulseAnimation = Tween<double>(
-      begin: 1.0,
+      begin: 0.95,
       end: 1.05,
     ).animate(CurvedAnimation(
       parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
+    
+    _pulseAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
+    
+    _instructionsAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _instructionsController,
       curve: Curves.easeInOut,
     ));
   }
@@ -180,6 +197,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
     _bounceController.dispose();
     _floatController.dispose();
     _pulseController.dispose();
+    _instructionsController.dispose();
     super.dispose();
   }
 
@@ -212,9 +230,10 @@ class _MainMenuScreenState extends State<MainMenuScreen>
             // Floating background elements
             ...List.generate(6, (index) => _buildFloatingElement(index)),
             
-            // Main content
+            // Main scrollable content
             SafeArea(
-              child: Container(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
                 padding: EdgeInsets.symmetric(
                   horizontal: isLandscape ? AppSizes.paddingMedium : AppSizes.paddingLarge,
                 ),
@@ -225,18 +244,23 @@ class _MainMenuScreenState extends State<MainMenuScreen>
                     // Header with user info
                     _buildModernHeader(),
                     
-                    SizedBox(height: isLandscape ? AppSizes.paddingLarge : AppSizes.paddingXXLarge),
+                    SizedBox(height: isLandscape ? AppSizes.paddingMedium : AppSizes.paddingLarge),
+                    
+                    // Instructions toggle button
+                    _buildInstructionsToggle(),
+                    
+                    // Expandable instructions widget
+                    _buildExpandableInstructions(),
+                    
+                    SizedBox(height: isLandscape ? AppSizes.paddingLarge : AppSizes.paddingXLarge),
                     
                     // Menu title with modern styling
                     _buildMenuTitle(),
                     
                     SizedBox(height: isLandscape ? AppSizes.paddingMedium : AppSizes.paddingLarge),
-                    
-                    // Menu items grid with modern cards
-                    Expanded(
-                      child: _buildModernMenuGrid(),
-                    ),
-                    
+
+                    _buildMenuGrid(),
+
                     SizedBox(height: safeAreaBottom > 0 ? safeAreaBottom : AppSizes.paddingLarge),
                   ],
                 ),
@@ -245,6 +269,320 @@ class _MainMenuScreenState extends State<MainMenuScreen>
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildInstructionsToggle() {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _isInstructionsExpanded = !_isInstructionsExpanded;
+          });
+          
+          if (_isInstructionsExpanded) {
+            _instructionsController.forward();
+          } else {
+            _instructionsController.reverse();
+          }
+          
+          HapticFeedback.lightImpact();
+        },
+        child: Container(
+          padding: EdgeInsets.all(AppSizes.paddingMedium),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.white.withOpacity(0.15),
+                AppColors.white.withOpacity(0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
+            border: Border.all(
+              color: AppColors.white.withOpacity(0.2),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(screenWidth * 0.02),
+                decoration: BoxDecoration(
+                  gradient: AppTheme.yellowGradient,
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.yellow.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.info_outline,
+                  color: AppColors.darkBlue,
+                  size: screenWidth * 0.05,
+                ),
+              ),
+              SizedBox(width: AppSizes.paddingMedium),
+              Expanded(
+                child: Text(
+                  'How it works',
+                  style: AppTextStyles.sectionTitle.copyWith(
+                    color: AppColors.white,
+                    fontSize: screenWidth * 0.04,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              AnimatedRotation(
+                turns: _isInstructionsExpanded ? 0.5 : 0.0,
+                duration: const Duration(milliseconds: 300),
+                child: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: AppColors.white,
+                  size: screenWidth * 0.06,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuGrid() {
+  final screenWidth = MediaQuery.of(context).size.width;
+  final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+  
+  return GridView.builder(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    padding: EdgeInsets.zero,
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: isLandscape ? 4 : 2,
+      crossAxisSpacing: AppSizes.paddingLarge,
+      mainAxisSpacing: AppSizes.paddingLarge,
+      childAspectRatio: isLandscape ? 0.9 : 1.1,
+    ),
+    itemCount: _menuItems.length,
+    itemBuilder: (context, index) {
+      return SlideTransition(
+        position: Tween<Offset>(
+          begin: Offset(0, 0.5 + (index * 0.1)),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(
+          parent: _slideController,
+          curve: Interval(
+            0.2 + (index * 0.1),
+            0.8 + (index * 0.1),
+            curve: Curves.elasticOut,
+          ),
+        )),
+        child: ScaleTransition(
+          scale: Tween<double>(
+            begin: 0.0,
+            end: 1.0,
+          ).animate(CurvedAnimation(
+            parent: _bounceController,
+            curve: Interval(
+              0.3 + (index * 0.1),
+              0.9 + (index * 0.1),
+              curve: Curves.elasticOut,
+            ),
+          )),
+          child: _buildModernMenuCard(_menuItems[index], index),
+        ),
+      );
+    },
+  );
+}
+
+  Widget _buildExpandableInstructions() {
+    return SizeTransition(
+      sizeFactor: _instructionsAnimation,
+      axisAlignment: -1.0,
+      child: FadeTransition(
+        opacity: _instructionsAnimation,
+        child: Container(
+          margin: EdgeInsets.only(top: AppSizes.paddingMedium),
+          child: _buildInstructionsContent(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInstructionsContent() {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Container(
+      padding: EdgeInsets.all(AppSizes.paddingLarge),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.white.withOpacity(0.1),
+            AppColors.white.withOpacity(0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
+        border: Border.all(
+          color: AppColors.white.withOpacity(0.15),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Instructions steps
+          _buildInstructionStep(
+            '1',
+            'Take quizzes with your child',
+            '🧩',
+            screenWidth,
+          ),
+          
+          SizedBox(height: AppSizes.paddingMedium),
+          
+          _buildInstructionStep(
+            '2',
+            'Earn certificates and rewards',
+            '🏆',
+            screenWidth,
+          ),
+          
+          SizedBox(height: AppSizes.paddingMedium),
+          
+          _buildInstructionStep(
+            '3',
+            'Visit our partner establishments',
+            '🏪',
+            screenWidth,
+          ),
+          
+          SizedBox(height: AppSizes.paddingMedium),
+          
+          _buildInstructionStep(
+            '4',
+            'Activate your gifts',
+            '🎁',
+            screenWidth,
+          ),
+          
+          SizedBox(height: AppSizes.paddingLarge),
+          
+          // Note about certificate verification
+          Container(
+            padding: EdgeInsets.all(AppSizes.paddingMedium),
+            decoration: BoxDecoration(
+              color: AppColors.yellow.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+              border: Border.all(
+                color: AppColors.yellow.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  '💡',
+                  style: TextStyle(fontSize: screenWidth * 0.045),
+                ),
+                SizedBox(width: AppSizes.paddingSmall),
+                Expanded(
+                  child: Text(
+                    'Consultants may require certificate verification',
+                    style: AppTextStyles.bodyText.copyWith(
+                      color: AppColors.white,
+                      fontSize: screenWidth * 0.033,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInstructionStep(String number, String text, String emoji, double screenWidth) {
+    return Row(
+      children: [
+        // Step number
+        Container(
+          width: screenWidth * 0.07,
+          height: screenWidth * 0.07,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.green,
+                AppColors.lightGreen,
+              ],
+            ),
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.green.withOpacity(0.3),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              number,
+              style: AppTextStyles.bodyText.copyWith(
+                color: AppColors.white,
+                fontSize: screenWidth * 0.032,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        
+        SizedBox(width: AppSizes.paddingMedium),
+        
+        // Emoji
+        Text(
+          emoji,
+          style: TextStyle(fontSize: screenWidth * 0.04),
+        ),
+        
+        SizedBox(width: AppSizes.paddingSmall),
+        
+        // Step text
+        Expanded(
+          child: Text(
+            text,
+            style: AppTextStyles.bodyText.copyWith(
+              color: AppColors.white,
+              fontSize: screenWidth * 0.035,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -322,126 +660,77 @@ class _MainMenuScreenState extends State<MainMenuScreen>
         ),
         child: Row(
           children: [
-            // User avatar with modern styling
-            AnimatedBuilder(
-              animation: _pulseAnimation,
-              builder: (context, child) {
-                return Transform.scale(
-                  scale: _pulseAnimation.value,
-                  child: Container(
-                    width: screenWidth * 0.15,
-                    height: screenWidth * 0.15,
-                    constraints: const BoxConstraints(
-                      minWidth: 60,
-                      maxWidth: 80,
-                      minHeight: 60,
-                      maxHeight: 80,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: AppTheme.yellowGradient,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.yellow.withOpacity(0.4),
-                          blurRadius: 15,
-                          spreadRadius: 3,
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        widget.userAvatar,
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.08,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+            // User avatar with enhanced styling
+            Container(
+              width: isLandscape ? screenWidth * 0.1 : screenWidth * 0.15,
+              height: isLandscape ? screenWidth * 0.1 : screenWidth * 0.15,
+              constraints: BoxConstraints(
+                minWidth: 50,
+                maxWidth: isLandscape ? 70 : 80,
+                minHeight: 50,
+                maxHeight: isLandscape ? 70 : 80,
+              ),
+              decoration: BoxDecoration(
+                gradient: AppTheme.yellowGradient,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.white.withOpacity(0.3),
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.yellow.withOpacity(0.4),
+                    blurRadius: 15,
+                    spreadRadius: 2,
                   ),
-                );
-              },
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  widget.userAvatar,
+                  style: TextStyle(
+                    fontSize: isLandscape ? screenWidth * 0.05 : screenWidth * 0.08,
+                  ),
+                ),
+              ),
             ),
             
             SizedBox(width: AppSizes.paddingLarge),
             
-            // User info with modern typography
+            // User info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Hello, ${widget.userName}! 👋',
+                    'Welcome back! 👋',
+                    style: AppTextStyles.bodyText.copyWith(
+                      color: AppColors.white.withOpacity(0.8),
+                      fontSize: screenWidth * 0.035,
+                    ),
+                  ),
+                  SizedBox(height: AppSizes.paddingXSmall),
+                  Text(
+                    widget.userName,
                     style: AppTextStyles.sectionTitle.copyWith(
-                      fontSize: screenWidth * 0.045,
                       color: AppColors.white,
+                      fontSize: screenWidth * 0.05,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  
-                  SizedBox(height: screenHeight * 0.005),
-                  
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.025,
-                      vertical: screenHeight * 0.005,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: AppTheme.greenGradient,
-                      borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.green.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      widget.userAge,
-                      style: AppTextStyles.captionBold?.copyWith(
-                        color: AppColors.white,
-                        fontSize: screenWidth * 0.035,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  
-                  SizedBox(height: screenHeight * 0.01),
-                  
                   Text(
-                    'Ready to develop your logic? 🧠',
+                    '${widget.userAge} years old',
                     style: AppTextStyles.bodyText.copyWith(
-                      fontSize: screenWidth * 0.04,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.white.withOpacity(0.9),
+                      color: AppColors.white.withOpacity(0.7),
+                      fontSize: screenWidth * 0.035,
                     ),
                   ),
                 ],
               ),
             ),
             
-            // Modern settings button
-            Container(
-              decoration: BoxDecoration(
-                color: AppColors.white.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
-                border: Border.all(
-                  color: AppColors.white.withOpacity(0.2),
-                  width: 1,
-                ),
-              ),
-              child: IconButton(
-                onPressed: () {
-                  HapticFeedback.lightImpact();
-                  _showSettingsDialog();
-                },
-                icon: Icon(
-                  Icons.settings_outlined,
-                  color: AppColors.white,
-                  size: screenWidth * 0.06,
-                ),
-              ),
-            ),
+            // Settings button
+            
           ],
         ),
       ),
@@ -514,276 +803,137 @@ class _MainMenuScreenState extends State<MainMenuScreen>
         crossAxisCount: isLandscape ? 4 : 2,
         crossAxisSpacing: AppSizes.paddingLarge,
         mainAxisSpacing: AppSizes.paddingLarge,
-        childAspectRatio: isLandscape ? 0.9 : 1.0,
+        childAspectRatio: isLandscape ? 0.9 : 1.1,
       ),
       itemCount: _menuItems.length,
       itemBuilder: (context, index) {
-        return AnimatedBuilder(
-          animation: _bounceAnimation,
-          builder: (context, child) {
-            final delay = index * 0.2;
-            final adjustedValue = (_bounceAnimation.value - delay).clamp(0.0, 1.0);
-            
-            return Transform.scale(
-              scale: 0.8 + (0.2 * adjustedValue),
-              child: Opacity(
-                opacity: adjustedValue,
-                child: _buildModernMenuItem(_menuItems[index], index),
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: Offset(0, 0.5 + (index * 0.1)),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: _slideController,
+            curve: Interval(
+              0.2 + (index * 0.1),
+              0.8 + (index * 0.1),
+              curve: Curves.elasticOut,
+            ),
+          )),
+          child: ScaleTransition(
+            scale: Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ).animate(CurvedAnimation(
+              parent: _bounceController,
+              curve: Interval(
+                0.3 + (index * 0.1),
+                0.9 + (index * 0.1),
+                curve: Curves.elasticOut,
               ),
-            );
-          },
+            )),
+            child: _buildModernMenuCard(_menuItems[index], index),
+          ),
         );
       },
     );
   }
 
-  Widget _buildModernMenuItem(MenuItemData item, int index) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
-    
-    return SlideTransition(
-      position: _slideAnimation,
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: GestureDetector(
-          onTap: () => _onMenuItemTap(item),
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                  spreadRadius: 0,
-                ),
-                BoxShadow(
-                  color: item.gradient[0].withOpacity(0.1),
-                  blurRadius: 30,
-                  offset: const Offset(0, 15),
-                  spreadRadius: -5,
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
-              child: Stack(
-                children: [
-                  // Gradient background effect
-                  Positioned(
-                    top: -20,
-                    right: -20,
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            item.gradient[0].withOpacity(0.1),
-                            item.gradient[1].withOpacity(0.05),
-                          ],
-                        ),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  
-                  // Main content
-                  Padding(
-                    padding: EdgeInsets.all(
-                      screenWidth > 375 ? AppSizes.paddingXLarge : AppSizes.paddingLarge,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Icon with modern styling
-                        Container(
-                          width: screenWidth * 0.15,
-                          height: screenWidth * 0.15,
-                          constraints: const BoxConstraints(
-                            minWidth: 60,
-                            maxWidth: 70,
-                            minHeight: 60,
-                            maxHeight: 70,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: item.gradient,
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: item.gradient[0].withOpacity(0.3),
-                                blurRadius: 15,
-                                spreadRadius: 2,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(
-                              item.emoji,
-                              style: TextStyle(fontSize: screenWidth * 0.07),
-                            ),
-                          ),
-                        ),
-                        
-                        SizedBox(height: AppSizes.paddingMedium),
-                        
-                        Text(
-                          item.title,
-                          style: AppTextStyles.cardTitle?.copyWith(
-                            fontSize: screenWidth * 0.04,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.darkBlue,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        
-                        SizedBox(height: AppSizes.paddingSmall),
-                        
-                        Text(
-                          item.subtitle,
-                          style: AppTextStyles.bodyText.copyWith(
-                            fontSize: screenWidth * 0.032,
-                            color: AppColors.grey,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _onMenuItemTap(MenuItemData item) {
-    HapticFeedback.lightImpact();
-    
-    // Navigate to the appropriate screen
-    if (item.route == '/partners') {
-      Navigator.of(context).pushNamed('/partners');
-    } else if (item.route == '/quizzes') {
-      Navigator.of(context).pushNamed('/quizzes');
-    } else if (item.route == '/certificates') {
-      Navigator.of(context).pushNamed('/certificates');
-    } else if (item.route == '/rewards') { 
-      Navigator.of(context).pushNamed('/rewards');
-    } else {
-      // Show coming soon dialog for other routes
-      _showComingSoonDialog(item);
-    }
-  }
-
-  void _showComingSoonDialog(MenuItemData item) {
+  Widget _buildModernMenuCard(MenuItemData item, int index) {
     final screenWidth = MediaQuery.of(context).size.width;
     
-    showDialog(
-      context: context,
-      barrierColor: Colors.black.withOpacity(0.8),
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          constraints: BoxConstraints(
-            maxWidth: screenWidth * 0.85,
-          ),
-          padding: EdgeInsets.all(
-            screenWidth > 375 ? AppSizes.paddingXLarge : AppSizes.paddingLarge,
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 30,
-                offset: const Offset(0, 15),
-              ),
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        Navigator.pushNamed(context, item.route);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              item.gradient[0].withOpacity(0.9),
+              item.gradient[1].withOpacity(0.7),
             ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
+          borderRadius: BorderRadius.circular(AppSizes.radiusXLarge),
+          border: Border.all(
+            color: AppColors.white.withOpacity(0.2),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: item.gradient[0].withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(AppSizes.paddingLarge),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Icon with gradient background
+              // Emoji with enhanced styling
               Container(
-                width: screenWidth * 0.15,
-                height: screenWidth * 0.15,
+                width: screenWidth * 0.12,
+                height: screenWidth * 0.12,
                 constraints: const BoxConstraints(
-                  minWidth: 60,
-                  maxWidth: 80,
-                  minHeight: 60,
-                  maxHeight: 80,
+                  minWidth: 50,
+                  maxWidth: 70,
+                  minHeight: 50,
+                  maxHeight: 70,
                 ),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: item.gradient),
+                  color: AppColors.white.withOpacity(0.2),
                   shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: item.gradient[0].withOpacity(0.3),
-                      blurRadius: 15,
-                      spreadRadius: 2,
-                    ),
-                  ],
+                  border: Border.all(
+                    color: AppColors.white.withOpacity(0.3),
+                    width: 2,
+                  ),
                 ),
                 child: Center(
                   child: Text(
                     item.emoji,
-                    style: TextStyle(fontSize: screenWidth * 0.08),
-                  ),
-                ),
-              ),
-              
-              SizedBox(height: AppSizes.paddingLarge),
-              
-              Text(
-                '${item.title} 🚀',
-                style: AppTextStyles.sectionTitle?.copyWith(
-                  fontSize: screenWidth * 0.05,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              SizedBox(height: AppSizes.paddingSmall),
-              
-              Text(
-                'Цей розділ скоро буде доступний!\nМи працюємо над його створенням.',
-                style: AppTextStyles.bodyText.copyWith(
-                  fontSize: screenWidth * 0.04,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              SizedBox(height: AppSizes.paddingXLarge),
-              
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: AppButtonStyles.primaryButton?.copyWith(
-                    padding: WidgetStateProperty.all(
-                      EdgeInsets.symmetric(
-                        vertical: screenWidth > 375 ? 15 : 12,
-                      ),
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.06,
                     ),
                   ),
-                  child: Text(
-                    'OK',
-                    style: TextStyle(fontSize: screenWidth * 0.04),
-                  ),
                 ),
+              ),
+              
+              SizedBox(height: AppSizes.paddingMedium),
+              
+              // Title
+              Text(
+                item.title,
+                style: AppTextStyles.cardTitle.copyWith(
+                  color: AppColors.white,
+                  fontSize: screenWidth * 0.04,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              
+              SizedBox(height: AppSizes.paddingXSmall),
+              
+              // Subtitle
+              Text(
+                item.subtitle,
+                style: AppTextStyles.bodyText.copyWith(
+                  color: AppColors.white.withOpacity(0.8),
+                  fontSize: screenWidth * 0.032,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -818,85 +968,7 @@ class _MainMenuScreenState extends State<MainMenuScreen>
               ),
             ],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.settings_outlined,
-                color: AppColors.darkBlue,
-                size: screenWidth * 0.15,
-              ),
-              
-              SizedBox(height: AppSizes.paddingLarge),
-              
-              Text(
-                'Settings ⚙️',
-                style: AppTextStyles.sectionTitle?.copyWith(
-                  fontSize: screenWidth * 0.05,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              SizedBox(height: AppSizes.paddingSmall),
-              
-              Text(
-                'Do you want to reset all your progress and start from the beginning?',
-                style: AppTextStyles.bodyText.copyWith(
-                  fontSize: screenWidth * 0.04,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              SizedBox(height: AppSizes.paddingXLarge),
-              
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: AppColors.grey),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          vertical: screenWidth > 375 ? 15 : 12,
-                        ),
-                      ),
-                      child: Text(
-                        'Cancel',
-                        style: TextStyle(fontSize: screenWidth * 0.04),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: AppSizes.paddingMedium),
-                  Expanded(
-                    flex: 2,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.error,
-                        foregroundColor: AppColors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          vertical: screenWidth > 375 ? 15 : 12,
-                        ),
-                      ),
-                      child: Text(
-                        'Yes, reset',
-                        style: TextStyle(fontSize: screenWidth * 0.04),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          
         ),
       ),
     );

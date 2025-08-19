@@ -13,6 +13,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.2.2
   intl: ^0.18.1
+  barcode_widget: ^2.0.4
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:

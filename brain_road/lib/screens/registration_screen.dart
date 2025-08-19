@@ -29,7 +29,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
 
   // Beautiful avatars with more variety
   final List<String> avatars = [
-    '🐔', '🐣', '🎯', '🚀', '🐓',
+    '🐉', '🐣', '🎯', '🚀', '🐓',
   ];
 
   // Age ranges

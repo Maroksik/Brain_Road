@@ -187,7 +187,7 @@ Future<void> _addCertificateWithReward(String quizId, String courseName, int sco
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Помилка при створенні сертифікату: $e'),
+          content: Text('Error: $e'),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 3),
         ),
@@ -693,35 +693,7 @@ void _showCertificateDialog(String courseName, bool hasReward) {
                 SizedBox(height: AppSizes.paddingXLarge),
                 
                 // Demo button for testing
-                ElevatedButton(
-                  onPressed: _addDemoCertificate,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.yellow,
-                    foregroundColor: AppColors.darkBlue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppSizes.paddingXLarge,
-                      vertical: AppSizes.paddingMedium,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '🎯 ',
-                        style: TextStyle(fontSize: screenWidth * 0.05),
-                      ),
-                      Text(
-                        'Earn Certificate (Demo)',
-                        style: AppTextStyles.buttonMedium.copyWith(
-                          fontSize: screenWidth * 0.04,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                
                 
                 SizedBox(height: AppSizes.paddingMedium),
                 

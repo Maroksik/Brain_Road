@@ -453,12 +453,7 @@ class _BrainRoadQuizzesListScreenState extends State<BrainRoadQuizzesListScreen>
                                     Icons.timer,
                                     AppColors.grey,
                                   ),
-                                  SizedBox(width: AppSizes.paddingXSmall),
-                                  _buildInfoChip(
-                                    quiz.ageGroup,
-                                    Icons.child_care,
-                                    AppColors.darkBlue,
-                                  ),
+                                  
                                 ],
                               ),
                               

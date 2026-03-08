@@ -1,4 +1,4 @@
-package com.thinkandsolve.mindpuzzles
+package com.thinksolve.mind
 
 import io.flutter.embedding.android.FlutterActivity
 

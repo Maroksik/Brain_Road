@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.thinkandsolve.mindpuzzles"
+    namespace = "com.thinksolve.mind"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -20,7 +20,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.thinkandsolve.mindpuzzles"
+        applicationId = "com.thinksolve.mind"
         minSdk = 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

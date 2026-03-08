@@ -1,10 +1,10 @@
 // lib/screens/rewards_screen.dart
 
-import 'package:brain_road/styles/app_styles.dart';
+import 'package:think_and_solve/styles/app_styles.dart';
 import 'package:flutter/material.dart';
-import 'package:brain_road/models/reward_data.dart';
-import 'package:brain_road/services/user_preferences.dart';
-import 'package:brain_road/widgets/gift_barcode_dialog.dart';
+import 'package:think_and_solve/models/reward_data.dart';
+import 'package:think_and_solve/services/user_preferences.dart';
+import 'package:think_and_solve/widgets/gift_barcode_dialog.dart';
 
 class RewardsScreen extends StatefulWidget {
   const RewardsScreen({Key? key}) : super(key: key);

@@ -1,4 +1,4 @@
-package com.example.brain_road
+package com.thinkandsolve.mindpuzzles
 
 import io.flutter.embedding.android.FlutterActivity
 

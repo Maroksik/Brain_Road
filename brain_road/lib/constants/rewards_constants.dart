@@ -1,7 +1,7 @@
 // Створіть файл lib/constants/rewards_constants.dart
 
 import 'package:flutter/material.dart';
-import 'package:brain_road/models/reward_data.dart';
+import 'package:think_and_solve/models/reward_data.dart';
 
 class RewardsConstants {
   
@@ -112,7 +112,7 @@ class RewardsConstants {
     'Brain Training': [
       RewardTemplate(
         title: 'Mystery Surprise Box',
-        partner: 'Brain Road Academy',
+        partner: 'Think & Solve Academy',
         description: 'Special surprise gift for top performers',
         emoji: '🎁',
         gradient: [const Color(0xFFFFD700), const Color(0xFFFFA500)],

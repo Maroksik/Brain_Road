@@ -30,7 +30,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       icon: '🧠',
       title: 'Develop your logic',
       subtitle: 'Interesting and effective',
-      description: 'Brain Road helps children develop logical thinking through engaging tasks and puzzles.',
+      description: 'Think & Solve: Mind Puzzles helps children develop logical thinking through engaging tasks and puzzles.',
       gradient: [AppColors.yellow, AppColors.lightYellow],
     ),
     WelcomePageData(
@@ -222,11 +222,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             const SizedBox(height: AppSizes.paddingLarge),
             
             Text(
-              'Brain Road',
+              'Think & Solve:\nMind Puzzles',
               style: AppTextStyles.mainTitle.copyWith(
-                fontSize: 32,
-                letterSpacing: 1.0,
+                fontSize: 22,
+                letterSpacing: 0.5,
               ),
+              textAlign: TextAlign.center,
             ),
             
             const SizedBox(height: AppSizes.paddingSmall),

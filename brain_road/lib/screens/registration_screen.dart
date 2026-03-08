@@ -14,7 +14,12 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState extends State<RegistrationScreen>
     with TickerProviderStateMixin {
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final FocusNode _nameFocus = FocusNode();
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
+  bool _passwordVisible = false;
   String? _selectedAvatar;
   String? _selectedAge;
   
@@ -115,12 +120,22 @@ class _RegistrationScreenState extends State<RegistrationScreen>
     _fadeController.dispose();
     _bounceController.dispose();
     _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     _nameFocus.dispose();
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
     super.dispose();
+  }
+
+  bool _isValidEmail(String email) {
+    return RegExp(r'^[\w.-]+@[\w.-]+\.\w{2,}$').hasMatch(email.trim());
   }
 
   bool get _isFormValid =>
       _nameController.text.trim().isNotEmpty &&
+      _isValidEmail(_emailController.text) &&
+      _passwordController.text.length >= 6 &&
       _selectedAvatar != null &&
       _selectedAge != null;
 
@@ -133,6 +148,8 @@ class _RegistrationScreenState extends State<RegistrationScreen>
         name: _nameController.text.trim(),
         avatar: _selectedAvatar!,
         age: _selectedAge!,
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
       );
       
       // Позначаємо перший запуск як завершений
@@ -336,6 +353,10 @@ class _RegistrationScreenState extends State<RegistrationScreen>
     String message = '';
     if (_nameController.text.trim().isEmpty) {
       message = 'Please enter your name 📝';
+    } else if (!_isValidEmail(_emailController.text)) {
+      message = 'Enter a valid email address 📧';
+    } else if (_passwordController.text.length < 6) {
+      message = 'Password must be at least 6 characters 🔒';
     } else if (_selectedAvatar == null) {
       message = 'Select your avatar 🎭';
     } else if (_selectedAge == null) {
@@ -467,11 +488,12 @@ class _RegistrationScreenState extends State<RegistrationScreen>
           SizedBox(height: AppSizes.paddingLarge),
           
           Text(
-            'Brain Road',
+            'Think & Solve:\nMind Puzzles',
             style: AppTextStyles.mainTitle.copyWith(
-              fontSize: screenWidth * 0.1,
-              letterSpacing: 1.2,
+              fontSize: screenWidth * 0.065,
+              letterSpacing: 0.5,
             ),
+            textAlign: TextAlign.center,
           ),
           
           SizedBox(height: AppSizes.paddingSmall),
@@ -668,6 +690,145 @@ class _RegistrationScreenState extends State<RegistrationScreen>
     );
   }
 
+  Widget _buildEmailInput() {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(screenWidth * 0.02),
+              decoration: BoxDecoration(
+                color: AppColors.darkBlue.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
+              ),
+              child: Icon(
+                Icons.email_outlined,
+                color: AppColors.darkBlue,
+                size: screenWidth * 0.05,
+              ),
+            ),
+            SizedBox(width: AppSizes.paddingSmall),
+            Text(
+              'Email address',
+              style: AppTextStyles.sectionTitle.copyWith(
+                fontSize: screenWidth * 0.045,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: AppSizes.paddingMedium),
+        TextField(
+          controller: _emailController,
+          focusNode: _emailFocus,
+          keyboardType: TextInputType.emailAddress,
+          decoration: InputDecoration(
+            hintText: 'example@email.com',
+            hintStyle: AppTextStyles.inputHint,
+            filled: true,
+            fillColor: AppColors.grey.withOpacity(0.05),
+            prefixIcon: const Icon(Icons.alternate_email, color: AppColors.grey),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+              borderSide: const BorderSide(color: AppColors.darkBlue, width: 2),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+              borderSide: BorderSide(color: AppColors.grey.withOpacity(0.2)),
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: AppSizes.paddingLarge,
+              vertical: screenWidth > 375 ? AppSizes.paddingMedium : AppSizes.paddingSmall,
+            ),
+          ),
+          style: AppTextStyles.inputText.copyWith(fontSize: screenWidth * 0.04),
+          onChanged: (value) => setState(() {}),
+          onSubmitted: (_) => FocusScope.of(context).requestFocus(_passwordFocus),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPasswordInput() {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(screenWidth * 0.02),
+              decoration: BoxDecoration(
+                color: AppColors.yellow.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
+              ),
+              child: Icon(
+                Icons.lock_outline,
+                color: AppColors.darkBlue,
+                size: screenWidth * 0.05,
+              ),
+            ),
+            SizedBox(width: AppSizes.paddingSmall),
+            Text(
+              'Password',
+              style: AppTextStyles.sectionTitle.copyWith(
+                fontSize: screenWidth * 0.045,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: AppSizes.paddingMedium),
+        TextField(
+          controller: _passwordController,
+          focusNode: _passwordFocus,
+          obscureText: !_passwordVisible,
+          decoration: InputDecoration(
+            hintText: 'At least 6 characters',
+            hintStyle: AppTextStyles.inputHint,
+            filled: true,
+            fillColor: AppColors.grey.withValues(alpha: 0.05),
+            prefixIcon: const Icon(Icons.lock_outline, color: AppColors.grey),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _passwordVisible ? Icons.visibility_off : Icons.visibility,
+                color: AppColors.grey,
+              ),
+              onPressed: () => setState(() => _passwordVisible = !_passwordVisible),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+              borderSide: const BorderSide(color: AppColors.yellow, width: 2),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+              borderSide: BorderSide(color: AppColors.grey.withValues(alpha: 0.2)),
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: AppSizes.paddingLarge,
+              vertical: screenWidth > 375 ? AppSizes.paddingMedium : AppSizes.paddingSmall,
+            ),
+          ),
+          style: AppTextStyles.inputText.copyWith(fontSize: screenWidth * 0.04),
+          onChanged: (value) => setState(() {}),
+          onSubmitted: (_) {
+            if (_isFormValid) _onRegister();
+          },
+        ),
+      ],
+    );
+  }
+
   Widget _buildAgeSelection() {
     final screenWidth = MediaQuery.of(context).size.width;
     
@@ -818,9 +979,19 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                               
                               // Name Input
                               _buildNameInput(),
-                              
+
                               SizedBox(height: screenHeight * 0.04),
-                              
+
+                              // Email Input
+                              _buildEmailInput(),
+
+                              SizedBox(height: screenHeight * 0.04),
+
+                              // Password Input
+                              _buildPasswordInput(),
+
+                              SizedBox(height: screenHeight * 0.04),
+
                               // Age Selection
                               _buildAgeSelection(),
                               
@@ -837,14 +1008,14 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                                         ? AppTheme.yellowGradient
                                         : LinearGradient(
                                             colors: [
-                                              AppColors.grey.withOpacity(0.3),
-                                              AppColors.grey.withOpacity(0.2),
+                                              AppColors.grey.withValues(alpha: 0.3),
+                                              AppColors.grey.withValues(alpha: 0.2),
                                             ],
                                           ),
                                     borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
                                     boxShadow: [
                                       if (_isFormValid) BoxShadow(
-                                        color: AppColors.yellow.withOpacity(0.4),
+                                        color: AppColors.yellow.withValues(alpha: 0.4),
                                         blurRadius: 15,
                                         offset: const Offset(0, 5),
                                       ),

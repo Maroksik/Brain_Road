@@ -1,7 +1,7 @@
-import 'package:brain_road/services/user_preferences.dart';
+import 'package:think_and_solve/services/user_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:brain_road/models/brain_road_certificate.dart';
+import 'package:think_and_solve/models/brain_road_certificate.dart';
 
 class BrainRoadQuizService {
   static const String _completedQuizzesKey = 'br_completed_quizzes';

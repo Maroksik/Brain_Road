@@ -1,5 +1,5 @@
-name: brain_road
-description: "A new Flutter project."
+name: think_and_solve
+description: "Think & Solve: Mind Puzzles — brain training quiz app."
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -23,8 +23,11 @@ dev_dependencies:
   flutter_launcher_icons: ^0.13.1
 
 flutter_icons:
+  android: true
   ios: true
   image_path: "lib/assets/icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "lib/assets/icon.png"
 
 
 flutter:

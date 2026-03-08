@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'dart:ui';
-import 'package:brain_road/constants/rewards_constants.dart';
+import 'package:think_and_solve/constants/rewards_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:brain_road/models/reward_data.dart';
+import 'package:think_and_solve/models/reward_data.dart';
 
 class UserPreferences {
   static const String _isFirstLaunchKey = 'is_first_launch';
   static const String _userNameKey = 'user_name';
   static const String _userAvatarKey = 'user_avatar';
   static const String _userAgeKey = 'user_age';
+  static const String _userEmailKey = 'user_email';
+  static const String _userPasswordKey = 'user_password';
   static const String _registrationCompletedKey = 'registration_completed';
   static const String _rewardsKey = 'rewards';
 
@@ -39,11 +41,15 @@ class UserPreferences {
     required String name,
     required String avatar,
     required String age,
+    required String email,
+    required String password,
   }) async {
     await Future.wait([
       _preferences?.setString(_userNameKey, name) ?? Future.value(),
       _preferences?.setString(_userAvatarKey, avatar) ?? Future.value(),
       _preferences?.setString(_userAgeKey, age) ?? Future.value(),
+      _preferences?.setString(_userEmailKey, email) ?? Future.value(),
+      _preferences?.setString(_userPasswordKey, password) ?? Future.value(),
       _preferences?.setBool(_registrationCompletedKey, true) ?? Future.value(),
     ]);
   }
@@ -58,6 +64,14 @@ class UserPreferences {
 
   static String get userAge {
     return _preferences?.getString(_userAgeKey) ?? '6-8';
+  }
+
+  static String get userEmail {
+    return _preferences?.getString(_userEmailKey) ?? '';
+  }
+
+  static String get userPassword {
+    return _preferences?.getString(_userPasswordKey) ?? '';
   }
 
   static String get userAgeLabel {
@@ -173,7 +187,7 @@ class UserPreferences {
         final fallbackReward = RewardData(
           id: 'reward_${DateTime.now().millisecondsSinceEpoch}',
           title: 'Special Achievement Reward',
-          partner: 'Brain Road Academy',
+          partner: 'Think & Solve Academy',
           description: 'Congratulations on completing $certificateName!',
           emoji: '🏆',
           gradient: [const Color(0xFFFFD700), const Color(0xFFFFA500)],
@@ -192,7 +206,7 @@ class UserPreferences {
         final emergencyReward = RewardData(
           id: 'emergency_${DateTime.now().millisecondsSinceEpoch}',
           title: 'Achievement Unlocked!',
-          partner: 'Brain Road',
+          partner: 'Think & Solve',
           description: 'Great job completing the quiz!',
           emoji: '🌟',
           gradient: [const Color(0xFF4CAF50), const Color(0xFF8BC34A)],
@@ -214,6 +228,7 @@ class UserPreferences {
       'avatar': userAvatar,
       'age': userAge,
       'ageLabel': userAgeLabel,
+      'email': userEmail,
     };
   }
 

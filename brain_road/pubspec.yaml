@@ -22,12 +22,12 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.13.1
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
-  ios: true
-  image_path: "lib/assets/icon.png"
+  ios: false
+  image_path: "lib/assets/new-icon.png"
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "lib/assets/icon.png"
+  adaptive_icon_foreground: "lib/assets/new-icon.png"
 
 
 flutter:
